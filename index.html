@@ -196,8 +196,8 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
     <div class="mg">
       <div><label>上腕 左（力こぶ）cm</label><input type="number" step="0.5" inputmode="decimal" id="mUL"></div>
       <div><label>上腕 右（力こぶ）cm</label><input type="number" step="0.5" inputmode="decimal" id="mUR"></div>
-      <div><label>大腿 左 cm</label><input type="number" step="0.5" inputmode="decimal" id="mTL"></div>
-      <div><label>大腿 右 cm</label><input type="number" step="0.5" inputmode="decimal" id="mTR"></div>
+      <div><label>大腿 左（座位） cm</label><input type="number" step="0.5" inputmode="decimal" id="mTL"></div>
+      <div><label>大腿 右（座位） cm</label><input type="number" step="0.5" inputmode="decimal" id="mTR"></div>
       <div><label>胸囲 cm（任意）</label><input type="number" step="0.5" inputmode="decimal" id="mCH"></div>
       <div><label>腹囲 脱力 cm</label><input type="number" step="0.5" inputmode="decimal" id="mWA"></div>
       <div><label>朝の脈（自粛ライン61）</label><input type="number" step="0.5" inputmode="decimal" id="mPU"></div>
@@ -253,7 +253,7 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
   <div class="card note">
     <b>上腕</b>　肩の出っぱり（肩峰）と肘の先（肘頭）の<b>ちょうど中間</b>。
     力こぶを作った状態で、いちばん太いところ。左右とも。<br><br>
-    <b>大腿</b>　ひざの皿の上ふちから<b>15cm上</b>。立って、体重を両脚に均等にかける。<br><br>
+    <b>大腿</b>　<b>座って測る</b>（2026-11-21 の初期値が座位のため、以後も座位でそろえる）。毎回同じ位置で。<br><br>
     <b>胸囲</b>　乳頭の高さ。軽く息を吐いた状態。<b>姿勢の影響が大きいので主指標にしない。</b><br><br>
     <b>腹囲</b>　臍の高さ・立位・軽く息を吐く（いままでどおり）。
     <div class="warn">
@@ -480,11 +480,14 @@ const LD0=()=>({sq:0,pu:0,hh:0,ro:0,cr:0});   // 2026-11-21 本人決定：す�
 // クエスト：本人の初期値（2026-11-21）をLv.1とし、全セット達成ごとに目標+1回。届かなかったところが上限の目安
 const Q0=()=>({sq:{lv:1,base:20,best:0,fail:null},pu:{lv:1,base:12,best:0,fail:null},
                hh:{lv:1,base:10,best:0,fail:null},ro:{lv:1,base:6,best:0,fail:null},cr:{lv:1,base:10,best:0,fail:null}});
+// 周径の初期値（2026-11-21 本人計測）。大腿は座位で測っている
+const G0=()=>({d:'2026-11-21',ul:32.5,ur:33.5,tl:47,tr:49});
 const D0=()=>({lv:LV0(),load:LD0(),q:Q0(),
   sets:2,log:[],meas:[],bia:[],ib:[],bee:[],kenshin:'',today:null,
   base:{d:'2026-11-21',w:72.2,ffm:58.6,bf:18.8,wc:84.21,vis:11},
-  model:{def:433,gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},ver:5});
-let S=load(), calM=new Date();
+  g0:G0(),
+  model:{def:433,gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},ver:6});
+let S=load(), calM=new Date(); if(!S.g0) S.g0=G0(); seedMeas();
 
 function load(){
   try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); const m=Object.assign(D0(),o);
@@ -493,11 +496,20 @@ function load(){
       if((o.ver||0)<4){ m.lv=LV0(); m.load=LD0(); m.today=null; m.ver=4; }
       // ver 5：本人の初期値でクエストを開始。種目は各L1・無負荷
       if((o.ver||0)<5){ m.lv=LV0(); m.load=LD0(); m.q=Q0(); m.today=null; m.ver=5; }
+      // ver 6：周径の初期値を登録。同じ日の計測記録がなければ、初期値を1件目として入れる
+      if((o.ver||0)<6){ m.g0=G0(); m.meas=m.meas||[];
+        const r=m.meas.find(x=>x.d===m.g0.d);
+        if(r){ ['ul','ur','tl','tr'].forEach(k=>{ if(r[k]==null) r[k]=m.g0[k]; }); }
+        else { m.meas.push({d:m.g0.d,ul:m.g0.ul,ur:m.g0.ur,tl:m.g0.tl,tr:m.g0.tr,ch:null,wa:null,pu:null});
+               m.meas.sort((a,c)=>a.d<c.d?-1:1); }
+        m.ver=6; }
       if(!m.q) m.q=Q0();
       return m;} }
   catch(e){}
   return D0();
 }
+function seedMeas(){ if(!S.meas.length){ const g=S.g0||G0();
+  S.meas.push({d:g.d,ul:g.ul,ur:g.ur,tl:g.tl,tr:g.tr,ch:null,wa:null,pu:null}); } }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
 
 function ds(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -920,6 +932,16 @@ function renderMeas(){
   h+='</table><div class="note" style="margin-top:10px">記録 '+S.meas.length+' 回。'+
      (S.meas.length<7?'<b>7回ためると平均で読めます。</b>':'巻き尺の誤差は日ごとに独立なので、7回平均で ±0.2cm 程度まで落ちます。')+
      '<br>上腕・大腿が<b style="color:#4ade80">増える</b>／腹囲が<b style="color:#60a5fa">減る</b>のが望む向き。</div>';
+  const g=S.g0||G0();
+  h+='<div style="margin-top:14px;font-size:12px;color:var(--ink3)">初期値（'+g.d+'）との差　※直近7回の平均と比べる</div>'+
+     '<table style="margin-top:4px"><tr><th>部位</th><th>初期値</th><th>いま</th><th>差</th></tr>';
+  [['ul','上腕 左'],['ur','上腕 右'],['tl','大腿 左（座位）'],['tr','大腿 右（座位）']].forEach(([k,nm])=>{
+    const a=avg7(k), d=a?(a.a-g[k]):null;
+    h+='<tr><td>'+nm+'</td><td>'+g[k].toFixed(1)+'</td><td>'+(a?'<b>'+a.a.toFixed(1)+'</b>':'—')+'</td>'+
+       '<td style="color:'+(d===null||Math.abs(d)<0.05?'var(--ink3)':(d>0?'var(--up)':'var(--blue)'))+'">'+
+       (d===null?'—':(d>0?'+':'')+d.toFixed(1))+'</td></tr>';
+  });
+  h+='</table>';
   document.getElementById('measAvg').innerHTML=h;
 
   const b=S.bia[S.bia.length-1];
