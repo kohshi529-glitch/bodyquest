@@ -3,7 +3,16 @@
 自分用の筋力増強アプリ。**娘の questboard とは別のリポジトリ**（混同しないため）。
 
 - 公開先：`https://kohshi529-glitch.github.io/bodyquest/`
-- 本体：`index.html` の1枚だけ。外部ライブラリなし、オフラインでも動く
+- ファイルは4つ。外部ライブラリなし、オフラインでも動く
+
+| | |
+|---|---|
+| `index.html` | 本体（約61KB） |
+| `manifest.webmanifest` | ホーム画面アプリの定義 |
+| `icon-180.png` | iOS の apple-touch-icon |
+| `icon-512.png` | Android / PWA 用 |
+
+※アイコンとマニフェストは index.html に埋め込まず、別ファイルにしてある。
 - 記録は**この端末のこのブラウザの localStorage** にだけ残る。
   サーバにも Firebase にも送らない。**ホーム画面のアイコンからだけ開くこと**
   （別のブラウザで開くと別の保存領域になり、記録が見えない）
@@ -22,7 +31,8 @@
 ## 設置のしかた
 
 1. GitHub で新しいリポジトリ `bodyquest` を作る（Public）
-2. `index.html` と `README.md` をアップロード
+2. `index.html` `manifest.webmanifest` `icon-180.png` `icon-512.png` `README.md` をアップロード
+   （「Add file → Upload files」でまとめて上げられます）
 3. Settings → Pages → Source を「Deploy from a branch」、ブランチ `main` / `(root)` にして Save
 4. 数分後に `https://kohshi529-glitch.github.io/bodyquest/` が開く
 5. iPhone の Safari で開き、共有 →「ホーム画面に追加」
@@ -30,3 +40,4 @@
 ## 更新のしかた
 
 `index.html` を同じ名前で上げ直すだけ。**localStorage の記録は消えません**（同じオリジンのため）。
+アイコンとマニフェストは変えないかぎり上げ直し不要です。
