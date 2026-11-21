@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f1420">
+<title>BodyQuest 筋トレクエスト</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BodyQuest">
+<meta name="description" content="自宅・器具なしのレジスタンストレーニングを、種目ごとに少しずつレベルを上げながら記録するアプリ。TANITA/InBodyの予測値と実測の差も見る。">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAEM0lEQVR42u3dMW7bQBCF4fXAvRsfwJ2AnMpHy6kM5DRO6SKBIVkUd/bt95cpAnLm5/BxtTSfXl7fPgcQQikBCA0QGiA0QGgQGiA0QGiA0AChQWiA0AChAUIDhAahAUID83lWgmP48/vX3f/H5f1DIe/kyStY54tLdEJvJTDBCR0tMMEJHS8xuQkdLTKxNxY6WeTdxd5K6EeKfIQ43Y+P0KEinynHysdO6KYydJIg8ZwI/eCmr9Tsnc51O6F3bi6xw4T+aUMTb7071yJC6J80cIen/h3rsrTQRFanGKFvbZL9DnvUbEmhb2kMkfeq31JCm8pqGSO0qayuI+WdQjKPFns8VtjUVWRGktStI8e1xSOymref0GTuPa27TuoiM5KkLjIjSeoiM5KkLu/IIanetdJ0JnNfqbtM6SIzkqQuMiNJ6pLhkNSP6jydybym1DOndPnrRUjqb8nNSMrTJachqU8lNyMpT/toEIavYJnOaDqlSx5DUv/KMh2S+l+ubiT1sUxnJE3pclUjqZ9lOiNpSpfpjKS+lumMpCn9bDrnXHydanp5/8janGQ6Y4Yf9nJg2MvhYRBN+1ziBpJiR5nOSOq3DA0ZGthGaPkZM30p+RlJfRc5IHIAWwgtP2O2NyU/I6n/z0p9ewPOvBN1OQ4ZGiA0QGjgeKG/y3MeCHHW84AJDRMa6IplO2vqJjRAaIDQAKFBaGBY5Ri2Ow4rKiY0QGiA0CA0QGiA0AChgW95enl9+xw2+fskxeQaH3XsJjREDoDQbteOf9jLMUWKlfI0kSdNaJLsLfNZ/S/TYs1zUWsZOkYaMUOGjsjVRG42oVf+8WK2TCvLfGbfS+H7n5uaytAxcokZMnREribyIhM66a/OP0q6JJnP7ndpSK9zVbsFM3Tat0GOakyazDP6LEM3yNXy8gITetcm3Xre6hSyfTT5k2TXNitZ5ln9LWuoc85dbQI3+Kd/OPLy/vFP8/73b6bzQkJ74PmqgVo8vgblbWs/YSf1szQTSRd1uaqR1Mdyy0VS/8vVjaT+VaerlNSZMp95d7bBH8NeDlMaDadz2wlNarl5KaGvuWpJvb7MM1a2yi9nSOpvdT5pU1pujlvlILV+LCW0PC03x01oUpM5LnKQmsxb/lJIavVeRuhrr3JS95K50xJsrbp+SWoyLxM5SE3muAxNajKP2Z9Gnv1Q4ud0da6kPQGmtaFRaRtdSL33HbB95LhHVhFkv1ouJbRcrX6RQpvWahYntD8urk5xQhNbXSKFvmd1I1HsnWsRI/QRS3Y7f3445cKOEnrH5hJ5A6GP/pGlU9MTz4nQkzepnynDysdO6IXfvjhCFN8OJ7TXuIhMaN9KJDSxiUxocpOY0AQnMKGzBScwoZcUnbiEBoaPBoHQAKEBQgOEBggNQgOEBggNEBqEBggNEBogNEBoEBpI4C9OoGtz9BcJCwAAAABJRU5ErkJggg==">
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAEM0lEQVR42u3dMW7bQBCF4fXAvRsfwJ2AnMpHy6kM5DRO6SKBIVkUd/bt95cpAnLm5/BxtTSfXl7fPgcQQikBCA0QGiA0QGgQGiA0QGiA0AChQWiA0AChAUIDhAahAUID83lWgmP48/vX3f/H5f1DIe/kyStY54tLdEJvJTDBCR0tMMEJHS8xuQkdLTKxNxY6WeTdxd5K6EeKfIQ43Y+P0KEinynHysdO6KYydJIg8ZwI/eCmr9Tsnc51O6F3bi6xw4T+aUMTb7071yJC6J80cIen/h3rsrTQRFanGKFvbZL9DnvUbEmhb2kMkfeq31JCm8pqGSO0qayuI+WdQjKPFns8VtjUVWRGktStI8e1xSOymref0GTuPa27TuoiM5KkLjIjSeoiM5KkLu/IIanetdJ0JnNfqbtM6SIzkqQuMiNJ6pLhkNSP6jydybym1DOndPnrRUjqb8nNSMrTJachqU8lNyMpT/toEIavYJnOaDqlSx5DUv/KMh2S+l+ubiT1sUxnJE3pclUjqZ9lOiNpSpfpjKS+lumMpCn9bDrnXHydanp5/8janGQ6Y4Yf9nJg2MvhYRBN+1ziBpJiR5nOSOq3DA0ZGthGaPkZM30p+RlJfRc5IHIAWwgtP2O2NyU/I6n/z0p9ewPOvBN1OQ4ZGiA0QGjgeKG/y3MeCHHW84AJDRMa6IplO2vqJjRAaIDQAKFBaGBY5Ri2Ow4rKiY0QGiA0CA0QGiA0AChgW95enl9+xw2+fskxeQaH3XsJjREDoDQbteOf9jLMUWKlfI0kSdNaJLsLfNZ/S/TYs1zUWsZOkYaMUOGjsjVRG42oVf+8WK2TCvLfGbfS+H7n5uaytAxcokZMnREribyIhM66a/OP0q6JJnP7ndpSK9zVbsFM3Tat0GOakyazDP6LEM3yNXy8gITetcm3Xre6hSyfTT5k2TXNitZ5ln9LWuoc85dbQI3+Kd/OPLy/vFP8/73b6bzQkJ74PmqgVo8vgblbWs/YSf1szQTSRd1uaqR1Mdyy0VS/8vVjaT+VaerlNSZMp95d7bBH8NeDlMaDadz2wlNarl5KaGvuWpJvb7MM1a2yi9nSOpvdT5pU1pujlvlILV+LCW0PC03x01oUpM5LnKQmsxb/lJIavVeRuhrr3JS95K50xJsrbp+SWoyLxM5SE3muAxNajKP2Z9Gnv1Q4ud0da6kPQGmtaFRaRtdSL33HbB95LhHVhFkv1ouJbRcrX6RQpvWahYntD8urk5xQhNbXSKFvmd1I1HsnWsRI/QRS3Y7f3445cKOEnrH5hJ5A6GP/pGlU9MTz4nQkzepnynDysdO6IXfvjhCFN8OJ7TXuIhMaN9KJDSxiUxocpOY0AQnMKGzBScwoZcUnbiEBoaPBoHQAKEBQgOEBggNQgOEBggNEBqEBggNEBogNEBoEBpI4C9OoGtz9BcJCwAAAABJRU5ErkJggg==">
+<link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQm9keVF1ZXN0IOeti+ODiOODrOOCr+OCqOOCueODiCIsInNob3J0X25hbWUiOiJCb2R5UXVlc3QiLCJzdGFydF91cmwiOiIuLyIsInNjb3BlIjoiLi8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMGYxNDIwIiwidGhlbWVfY29sb3IiOiIjMGYxNDIwIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBZ0FBQUFJQUNBWUFBQUQwZU5UNkFBQU5iMGxFUVZSNDJ1M2QwVTN6U2hTRjBlM0k3MzV4QVg1RG9pcEtveW9rcWpFVklFVkNOcG5aYXpWd2RZUG5uQytUd0w5cyszRUdBS2p5OEJJQWdBQUFBQVFBQUNBQUFBQUJBQUFJQUFCQUFBQUFBZ0FBRUFBQWdBQUFBQVFBQUNBQUFBQUJBQUFJQUFCQUFBQUFBZ0FBRUFBQWdBQUFBQUVBQUFnQUFFQUFBQUFDQUFBUUFBQ0FBQUFBQkFBQUlBQUFBQUVBQUFnQUFFQUFBQUFDQUFBUUFBQ0FBQUFBQkFBQUlBQUFBQUVBQUFJQUFCQUFBSUFBQUFBRUFBQWdBQUFBQVFBQUNBQUFRQUFBQUFJQUFCQUFBSUFBQUFBRUFBQWdBQUFBQVFBQUNBQUE0QmVybHdERzkvMzVmdnQvOCszanl3c1BBMXUyL1RpOURHQ3hDd1VRQUlBbEx3NUFBQUFXdlRBQUFRQlk5cUlBQkFCWTlwYTlLQUFCQUJZK2dnQUVBRmo2aUFFUUFHRGhJd2hBQUlDbGp4Z0FBUUNXUG1JQUJBQlkrb2dCRUFCZzZTTUdRQUNBcFk4WUFBRUFGajlDQUFRQWxqNklBUkFBV1B3Z0JFQUFZUEdERUVBQUNBQXNmUkFEQ0FDdytDMGRQeE1oZ0FBQWk5OFM4VE1VQWdnQXNEUXNDRDluUDJjRUFGZ0lGb0Rud0hPQUFBQUQzNkQzZkhnK0VBQlFOZGdOYzgrT1p3Y0JBQ1hEMitEMlBIbWVFQUJRTUt3TmFNK1lad3dCQUNWRDJVRDIzSG51RUFCUU1vQU5YOCtpWnhFQkFDVUQxNkQxYkhvMkVRQlFNbHdOVmp5dkNBQW9HYVNHS0o1aEVBQVVEVTVERTg4ekNBQktCcVVoaVdjY0JBQkZnOUZReFBNT0FnQ0RFRHovSUFDWWNmZ1pmRGdMemdJQ2dKSmhaOURoZkRnZkNBQ0tocHZCaHJQaXJDQUFLQnBvaGhuT2pYT0RBTUFBQStmSU9lSVBIbDRDREMyWS8va2QvWjlKeGcwQUpVUEM0c2ZaY3JZUUFCaE80S3c1YXdnQVpoeEloaEhPblhOSGZBY0FRd2ppK3dHK0Y0QWJBQ3grY0I2ZFJ3UUFndzhiZ3dhY1RlSWpBQXdZNERYT2g0OEUzQUJnK1Z2ODRMemlCZ0REeERDQnBuUGpKc0FOQUphL3hRL09NRzRBTURnTURtZzZUMjRDM0FCZzhWdjg0R3g3OGQwQVlFQVlFT0EyQUFHQTVXLzVnd2dnUGdLZ2F2bGIvT0RjNHdZQVF3QW9PSWR1QWdRQWxqOGdBb2lQQUNoWS9oWS9tQWxtZ2hzQUhIU2cvRGJBVFlBQXdQSUhSQUFDQU1zZkVBSEVkd0FZOFpCWi9HQnVtQnR1QUhDSUFiY0JiZ0lFQUpZL0lBSkVnQURBOGdkRWdBZ1FBRmorZ0FnUUFRSUFRd0Z3M2hFQXZGbzlHd1lnQXR3Q0NBQXNmMEFFaUFBQmdPVVBpQUFSSUFDdy9BRVJJQUlFQUpZL0lBSkVnQURBOGdkRWdBZ1FBRmorZ0FnUUFRSUF2L2NMbUJjSUFPNnJZSWNaZU1XNTRSWkFBRmorbGo4Z0FoQUFsci9sRDRnQUJBQ1dQMkNlSUFDOCszZFlnZmtpd0MyQUFMRDhMWDlBQkNBQUxIL0xIeEFCQ0FBc2Y4QzhRUUI0OXc5Z1hpSUFYUDBEK0NnQUFXRDVBNGdBQklEREIyQU9JUUJHZi9mdjBBRU5FZUFXUUFCWS9nRG1LUUpBYlFPWVN3Z0FWLzhBUGdwQUFGaitBQ0lBQVFBQUNBRHYvZ0hjQWlBQUxIOEFFU0FBOE0xYUFQTkxBS0JHQWN4ZEFZQjZCakRIQkFBWFZxaERBNGdBdHdBQ3dCVVVBT2F3QUZETEFPWWFBc0RWUDRDUEFoQUFBSUFBOE80ZndDMEFBc0R5QnhBQkNBQUFFQUI0OXcvZ0ZrQUFBQUFDd0x0LzcvNEIzQUlJQUN4L0FITlFBSGozRDRDNUxRQlF2UURtb1FCUWtRQ1kzd0pBN1hvUkFNeEZBYUFlQVRESEJZREtCVEFmRVFEelZLT0hHK0QrT2VrV1FBQUFBQUxBdTM4QXR3QUNBQUFRQUhqM0QyQnVDb0M0L2dmQWZCY0FxRmdBODFNQXFFTUF6SGtCQUFBSUFMLzZCNEJmQ1JRQUFJQUFVSzBBbUtjQ0lMNFVBb0M1ZjczVlk2QldIWGh3ZmtmNHVUakRiZ0FzQlFETWZ3SGczUU9BK1lvQUFBQUVRRnovQUdBUENJQzRuZ0l3WnhFQUFDQUE0dHBIbFFKMDNRSzBmZ3pnQmdBQUJBQUFJQURpK2ordS93SGlZd0FCQUFBSUFBQkFBTVQxUHdEeE1ZQUFBQUFFQUFBZ0FPTDZId0FmQXdnQUFFQUFBQUFDSVA1RktnRE1Zd0VRbitzQVlGOElBQUJBQU1SMUU0QzVUSFVBdVA0SHdONXdBd0FBYmdDOEJBQWdBSWpQbVFETVp3RVFuK01BRU44REVBQUFnQUNJNnlVQXpHa0JBQUFJQUFCQUFNUVhPQUN3UndRQUFDQUE0b3NsQUpqWEFnQUFFQUFBZ0FDSUx3QUNZSjhJZ1BnOENRQnorMG1ybHdDdUhTQnVvN3orNEFZQUFCQUFBSUFBQUFBRVFIem1CNEM5SWdEaW02UUFtTjhDQUFBUUFBQ0FBQUFBQkFBQUlBQUFRQURFcjJvQVFOZCtjUU1RdjBJQ1lJNjdBUUFBQkFBQUlBQUFBQUVBQUFnQUFFQUFBQUFDQUFBUUFBQ0FBSWkvMGdTQVBYT2YxWTh6L25vVW5pV1kvQXg2ZytnakFBQkFBQUNBQUFBQUJBQUFJQUFBQUFFQUFBZ0FBRUFBQUFBQ0FBQVFBQUNBQUFBQUJBQUFJQUFBQUFFQUFNUS9Cd3p4NzRmSFA2TU11QUVBQUFRQUFDQUFBQUFCQUFBQ0FBQVFBQUNBQUFBQUJBQUFJQUFBQUFFQUFBZ0FBRUFBeE45dkI4QThGd0R4ajRjQVlNOElBQUJBQUFBQUFnQUFFQUFBZ0FBQUFBUUFBQ0FBQUlBa1diMEVFSDg4eE9zUGJnQXdnQURNY1FFUWY2VUpBT2JiTDI0QUFNQU5BQUFnQUFBQUFRQUFDQUFBUUFERXI1QUFZSDRMZ1BoVkRRRHNGUUVBRGpDZUVZZy9CUXovTitCZERXTHhFeDhCZ0lHUFp3RUVBQmo4ZUFaQUFPQzZlUFlGWUFsWS9wamJBc0RoeGpKQTlFSEZmSEFEQUNMQXp4amNBSUFGZ1o4dENBRGk4eVJYeFBoNVlsNExBUENPRVQ5REVBQU9QeFlJZm5aNGpnUUF1RUxHMEFZQkFKWUtZZzBFUUh5eEJCR0FudzNtdEFBQTd6S3gvRUVBR0F4NHRoQmpPT01DSUs2WE1DRHcybU0rQ3dDd2lQQ2Fnd0FBVjlHV1B5QUFEQXc4YXlJTG5HVUJFSjh6WVhCNFRUR1hFUURnM2FybEQ1UUdnQ0dDNTA1RWdYUHJCaUN1bXpCTXZHYVl4MjRBQU85bUxYOFFBSURsNXZXQnVTM2JmcHh4VldSZzRjclM0c2RacW5vVzNRQ0FoZWUxZ1BnSUFQQzlBTXNmQklDQkUxZTVXSUwrdjRucmZ3RUFXSVp1UGtBQUFCYWowQUVCNEdNQXNDUXRmK0w2WHdBQTljUElsVDhJQUtCc2NWcjhJQUI4REFCbFM5VHlKNjcvQlFEUU5hQXNmeEFBcWhTS2xxclArekZuQllDQkNtVUwxbm5DSGhBQVFOblFzdnhCQU1UMWxPc3BlcGF1SzMvTVZ3RmdpRUxaQW5aMk1QOEZBQ3FWc2tGbStXT3VDZ0RERThxZVkrY0Y1MFVBb0ZZcCtrakE1LzJZcHdJQUtIdDNZL0dEQURBd1ZTdGx6N1RsejJ6di9qM1RBZ0JFZ0N0L0VBQ29Rbnd2d0ZuQW5CY0F4TWNBZEE0K0F4THpVd0FZa2xEMmZIditNZDhGQUNxV29vOEVmTjZQdVNrQWdMSjNReFkvZEZxMi9UaTlESDcxQk1EOGRRTUFBQWlBK0xLSXo3UUF2UHNYQUlnQUFQTlJBTGdGQU1BY0Z3Q29YQUJ6VVFDb1J3RE1id0dBMmdVd0R3V0FpZ1RBM0JZQXFoZkFIRVFBVk5Ta2h4K3cvTDM3RndBQWdBQndDd0RnM2I5My93SUFBQkFBYmdFQXZQdjM3bDhBaUFBQXl4OEJBQUFJQUxjQUFONzlJd0Q4WVF3QWMwMEFvRG9CekdFQmdJOENBRno5Q3dCY21RR1lZd0lBRlFwZzdnb0ExRE9BK1NVQTFLaERCSER0M1BMdVh3Q0lBQURMSHdFQUFBZ0F0d0FBM3YwakFFUUFnT1dQQUhESUFNd2xBWUJhQlRCUEJRQStDZ0J3OVM4QWNPVUdZQTRKQUY2cVhoMCtZTmJsNzkyL0FCQUJJZ0N3L0JFQUlnREF2RVFBNEJZQU1HOFFBRDRLQUhEMWp3QVFBUUNXUHdKQUJBQlkvZ2dBaHhYQVBCRUF6UFl0VjRjV0dHR09lUGN2QUVTQUNBQXNmd1NBQ0JBQmdPV1BBRUFFQU9ZRkFzQXRnRU1OakRzbnZQc1hBSWdBd1BKSEFJZ0FFUUJZL2dnQUVTQUNBTXNmQVNBQ1JBQmcrU01BUklBSUFDeC9CSUFJRUFHQTVZOEFRQVFBempzQ3dDMkFvUURjZTg2OSt4Y0FpQURBOGtjQUlBSUF5eDhCZ0FnQUxIOXV0Mno3Y1hvWkhHWUhHc3dLczhJTkFHNEMzQWFBNVcvNUN3QkVnQWdBeTkveUZ3Q0lBTUR5dC96ak93QlUvbEVQaHg3TUFYUEFEUUJsTndGdUE4RHl0L3dGQUNJQXNQeUpqd0FvL1J2ZkJnSTQ2N2dCb093bXdHMEFXUDRJQUVRQVlQa1RId0ZnV0FET01tNEFjQnNBV1A2NEFhQmlJUnNpNE56aUJvREN3K3cyQUN4LzNBQlFQRlFNRm5CR2NRTkE2ZUYyR3dDV1AyNEFLRi9FaGcwNGp3Z0FEQjV3L3B3LzRpTUFpZzYvandXdy9DMS8zQUJRdm9RTkpKdzFadzBCZ09FRXpwYXpoUUNnOFVyZXNNSjVjcDZJN3dEUU55UjhQd0RMMy9MSERRQUdtQjhJem8xemd3Q2c5VjI0Z1lhejRxd2dBQ2kraWpmY2NENmNEd1FBNVovSkczWTRDODRDQW9EaUwrWVpmbmorUVFCZ0VJTG5IUVFBamIrbVp6RGlHUWNCUVBudjZ4dVVlSjVCQUZEOFIzc01UanpESUFBby8rdDlCaW1lVndRQWxQOFpYOFBWcytuWlJBQkErZC95TjNBOWk1NUZCQUNVLzZNK0JyRG56bk9IQUlEeWY5M1BVUGFNZWNZUUFPQ2YrRFdzUFUrZUp3UUFOQTl1dzl1ejQ5bEJBRUQ1TURmWVBSK2VEd1FBR1BRR3Z1ZkFjNEFBQUF2QVF2QnpCZ0VBRnNUa1M4UFAwT0pIQUlBbE10R1M4VE94K0JFQVlPbUF4WThBQURHQXBROENBSVFBRmo4SUFCQUNXUHdnQUVBTVlPbURBQUFoZ01VUEFnREVBSlkrQ0FBUUExajZJQUJBREdEcGd3QUFNWUNsRHdJQXhBQ1dQZ2dBRUFRV1BpQUFRQXhZK2lBQUJBQUlBZ3NmQkFBZ0NpeDdFQUNBS0xEc1FRQUF3c0NpQndFQWlBTkxIZ1FBVUJRS0Zqc0lBQUJnTUE4dkFRQUlBQUJBQUFBQUFnQUFFQUFBZ0FBQUFBUUFBQ0FBQUFBQkFBQUlBQUJBQUFBQUFnQUFFQUFBZ0FBQUFBUUFBQ0FBQUFBQkFBQUlBQUFRQUFDQUFBQUFCQUFBSUFBQUFBRUFBQWdBQUVBQUFBQUNBQUFRQUFDQUFBQUFCQUFBSUFBQUFBRUFBQWdBQUVBQUFBQUNBQUFRQUFBZ0FBQUFBUUFBQ0FBQVFBQUFBQUlBQUJBQUFJQUFBQUFFQUFBZ0FBQUFBUUFBQ0FBQVFBQUFBQUlBQUJBQUFNQnpmZ0MzdExuVDI1LzBCUUFBQUFCSlJVNUVya0pnZ2c9PSIsInNpemVzIjoiNTEyeDUxMiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55In0seyJzcmMiOiJkYXRhOmltYWdlL3BuZztiYXNlNjQsaVZCT1J3MEtHZ29BQUFBTlNVaEVVZ0FBQUxRQUFBQzBDQVlBQUFBOXpRWXlBQUFFTTBsRVFWUjQydTNkTVc3YlFCQ0Y0ZlhBdlJzZndKMkFuTXBIeTZrTTVEUk82U0tCSVZrVWQvYnQ5NWNwQW5MbTUvQnh0VFNmWGw3ZlBnY1FRaWtCQ0EwUUdpQTBRR2dRR2lBMFFHaUEwQUNoUVdpQTBBQ2hBVUlEaEFhaEFVSUQ4M2xXZ21QNDgvdlgzZi9INWYxREllL2t5U3RZNTR0TGRFSnZKVERCQ1IwdE1NRUpIUzh4dVFrZExUS3hOeFk2V2VUZHhkNUs2RWVLZklRNDNZK1AwS0VpbnluSHlzZE82S1l5ZEpJZzhad0kvZUNtcjlUc25jNTFPNkYzYmk2eHc0VCthVU1UYjcwNzF5SkM2SjgwY0llbi9oM3JzclRRUkZhbkdLRnZiWkw5RG52VWJFbWhiMmtNa2ZlcTMxSkNtOHBxR1NPMHFheXVJK1dkUWpLUEZuczhWdGpVVldSR2t0U3RJOGUxeFNPeW1yZWYwR1R1UGEyN1R1b2lNNUtrTGpJalNlb2lNNUtrTHUvSUlhbmV0ZEowSm5OZnFidE02U0l6a3FRdU1pTko2cExoa05TUDZqeWR5YnltMURPbmRQbnJSVWpxYjhuTlNNclRKYWNocVU4bE55TXBUL3RvRUlhdllKbk9hRHFsU3g1RFV2L0tNaDJTK2wrdWJpVDFzVXhuSkUzcGNsVWpxWjlsT2lOcFNwZnBqS1MrbHVtTXBDbjliRHJuWEh5ZGFucDUvOGphbkdRNlk0WWY5bkpnMk12aFlSQk4rMXppQnBKaVI1bk9TT3EzREEwWkd0aEdhUGtaTTMwcCtSbEpmUmM1SUhJQVd3Z3RQMk8yTnlVL0k2bi96MHA5ZXdQT3ZCTjFPUTRaR2lBMFFHamdlS0cveTNNZUNISFc4NEFKRFJNYTZJcGxPMnZxSmpSQWFJRFFBS0ZCYUdCWTVSaTJPdzRyS2lZMFFHaUEwQ0EwUUdpQTBBQ2hnVzk1ZW5sOSt4dzIrZnNreGVRYUgzWHNKalJFRG9EUWJ0ZU9mOWpMTVVXS2xmSTBrU2ROYUpMc0xmTlovUy9UWXMxelVXc1pPa1lhTVVPR2pzalZSRzQyb1ZmKzhXSzJUQ3ZMZkdiZlMrSDduNXVheXRBeGNva1pNblJFcmlieUloTTY2YS9PUDBxNkpKblA3bmRwU0s5elZic0ZNM1RhdDBHT2FreWF6RFA2TEVNM3lOWHk4Z0lUZXRjbTNYcmU2aFN5ZlRUNWsyVFhOaXRaNWxuOUxXdW9jODVkYlFJMytLZC9PUEx5L3ZGUDgvNzNiNmJ6UWtKNzRQbXFnVm84dmdibGJXcy9ZU2Yxc3pRVFNSZDF1YXFSMU1keXkwVlMvOHZWamFUK1ZhZXJsTlNaTXA5NWQ3YkJIOE5lRGxNYURhZHoyd2xOYXJsNUthR3Z1V3BKdmI3TU0xYTJ5aTluU09wdmRUNXBVMXB1amx2bElMVitMQ1cwUEMwM3gwMW9VcE01TG5LUW1zeGIvbEpJYXZWZVJ1aHJyM0pTOTVLNTB4SnNyYnArU1dveUx4TTVTRTNtdUF4TmFqS1AyWjlHbnYxUTR1ZDBkYTZrUFFHbXRhRlJhUnRkU0wzM0hiQjk1TGhIVmhGa3Yxb3VKYlJjclg2UlFwdldhaFludEQ4dXJrNXhRaE5iWFNLRnZtZDFJMUhzbldzUkkvUVJTM1k3ZjM0NDVjS09FbnJINWhKNUE2R1AvcEdsVTlNVHo0blFremVwbnluRHlzZE82SVhmdmpoQ0ZOOE9KN1RYdUloTWFOOUtKRFN4aVV4b2NwT1kwQVFuTUtHekJTY3dvWmNVbmJpRUJvYVBCb0hRQUtFQlFnT0VCZ2dOUWdPRUJnZ05FQnFFQmdnTkVCb2dORUJvRUJwSTRDOU9vR3R6OUJjSkN3QUFBQUJKUlU1RXJrSmdnZz09Iiwic2l6ZXMiOiIxODB4MTgwIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f1420; --panel:#182134; --panel2:#1f2b42; --line:#2c3a56;
+  --ink:#e8eefc; --ink2:#9fb0ce; --ink3:#6b7d9c;
+  --gold:#e8b44a; --gold2:#ffd27a; --up:#4ade80; --hot:#f87171; --blue:#60a5fa;
+}
+html,body{background:var(--bg);color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP",sans-serif;
+  font-size:16px;line-height:1.6;-webkit-text-size-adjust:100%}
+body{padding:0 0 88px;max-width:560px;margin:0 auto;min-height:100vh}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#141c2d,#0f1420);
+  border-bottom:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-top,0)) 16px;
+  padding-top:calc(10px + env(safe-area-inset-top,0))}
+.hd{display:flex;align-items:baseline;gap:10px}
+.hd h1{font-size:17px;letter-spacing:.06em;font-weight:700}
+.hd .rank{margin-left:auto;font-size:12px;color:var(--gold2);font-weight:700}
+.bar{height:5px;background:#101728;border-radius:3px;margin-top:8px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));width:0%}
+.sub{font-size:11px;color:var(--ink3);margin-top:5px;display:flex;gap:12px;flex-wrap:wrap}
+main{padding:14px 16px}
+section{display:none}
+section.on{display:block}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.card.q{cursor:pointer;position:relative;overflow:hidden}
+.card.done{border-color:#2f6b45;background:linear-gradient(180deg,#17301f,#182134)}
+.qh{display:flex;align-items:center;gap:10px}
+.qh .ic{font-size:24px;width:30px;text-align:center}
+.qh .nm{font-weight:700;font-size:15px}
+.qh .lv{margin-left:auto;font-size:11px;color:var(--gold2);background:#2a2412;
+  border:1px solid #4b3d16;padding:2px 8px;border-radius:99px;white-space:nowrap}
+.qd{font-size:12.5px;color:var(--ink2);margin-top:7px}
+.qt{font-size:12px;color:var(--ink3);margin-top:4px}
+.qr{margin-top:9px;display:flex;gap:6px;flex-wrap:wrap}
+.pill{font-size:13px;font-weight:700;background:var(--panel2);border:1px solid var(--line);
+  border-radius:8px;padding:3px 11px;min-width:46px;text-align:center}
+.pill.hit{border-color:#3f7a56;color:var(--up);background:#15291e}
+.tick{position:absolute;right:12px;top:12px;color:var(--up);font-size:18px}
+h2{font-size:13px;color:var(--ink3);letter-spacing:.08em;margin:18px 0 9px;font-weight:700}
+h2:first-child{margin-top:0}
+.row{display:flex;gap:10px}
+.row>*{flex:1}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px;text-align:center}
+.stat b{display:block;font-size:21px;color:var(--gold2);line-height:1.25}
+.stat span{font-size:10.5px;color:var(--ink3)}
+button{font:inherit;color:inherit;border:none;background:none;cursor:pointer}
+.btn{display:block;width:100%;background:#243352;
+  border:1px solid var(--line);border-radius:11px;padding:13px;font-weight:700;font-size:15px;text-align:center}
+.btn.p{background:linear-gradient(180deg,#c9982f,#a87c22);border-color:#e8b44a;color:#1a1405}
+.btn.g{background:#1d2c3f;border-color:#35557d;color:var(--blue)}
+.btn.sm{padding:9px;font-size:13px}
+.btn:active{transform:translateY(1px)}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;
+  background:#121a29;border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0);max-width:560px;margin:0 auto}
+nav button{flex:1;padding:9px 2px 8px;font-size:10.5px;color:var(--ink3);text-align:center}
+nav button i{display:block;font-size:19px;font-style:normal;line-height:1.3}
+nav button.on{color:var(--gold2)}
+.ov{position:fixed;inset:0;z-index:50;background:rgba(6,10,18,.88);
+  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.ov.on{display:flex}
+.sheet{background:var(--panel);width:100%;max-width:560px;border-radius:18px 18px 0 0;
+  border-top:1px solid var(--line);padding:18px 16px calc(20px + env(safe-area-inset-bottom,0));
+  max-height:92vh;overflow:auto}
+.sh{display:flex;align-items:center;gap:9px;margin-bottom:4px}
+.sh .ic{font-size:26px}
+.sh .nm{font-weight:700;font-size:17px}
+.sh .x{margin-left:auto;font-size:22px;color:var(--ink3);padding:0 6px}
+.lvbox{background:#121a29;border:1px solid var(--line);border-radius:11px;padding:11px;margin:11px 0}
+.lvbox .t{font-size:11px;color:var(--gold2);font-weight:700}
+.lvbox .n{font-size:16px;font-weight:700;margin-top:2px}
+.lvbox .h{font-size:12px;color:var(--ink2);margin-top:6px;line-height:1.55}
+.setrow{display:flex;align-items:center;gap:9px;margin:9px 0}
+.setrow .lb{font-size:12px;color:var(--ink3);width:52px}
+.stp{display:flex;align-items:center;gap:0;flex:1;
+  background:#121a29;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.stp button{width:48px;height:46px;font-size:22px;font-weight:700;color:var(--ink2);flex:none}
+.stp button:active{background:var(--panel2)}
+.stp .v{flex:1;text-align:center;font-size:21px;font-weight:700;font-variant-numeric:tabular-nums}
+.stp .v small{font-size:11px;color:var(--ink3);font-weight:400;margin-left:2px}
+.hint{font-size:11.5px;color:var(--ink3);margin-top:9px;line-height:1.6}
+.ladder{margin-top:12px}
+.ladder .r{display:flex;gap:9px;align-items:baseline;padding:6px 9px;border-radius:8px;font-size:12.5px}
+.ladder .r.cur{background:#2a2412;border:1px solid #4b3d16}
+.ladder .r.past{color:var(--ink3)}
+.ladder .r .l{color:var(--gold2);font-weight:700;width:26px;flex:none;font-size:11px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal div{aspect-ratio:1;border-radius:7px;background:#121a29;border:1px solid #1d2638;
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--ink3)}
+.cal div.t{border-color:var(--gold)}
+.cal div.w{background:#1c3324;border-color:#2f6b45;color:var(--up);font-weight:700}
+.cal div.m{background:#1b2740;border-color:#35557d;color:var(--blue)}
+.cal div.wm{background:linear-gradient(135deg,#1c3324,#1b2740);border-color:#2f6b45;color:var(--up);font-weight:700}
+.calh{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:5px}
+.calh span{text-align:center;font-size:10px;color:var(--ink3)}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:7px 4px;border-bottom:1px solid #1d2638;text-align:right}
+th{color:var(--ink3);font-size:10.5px;font-weight:700;text-align:right}
+th:first-child,td:first-child{text-align:left}
+td b{color:var(--gold2)}
+input[type=number],input[type=text],textarea{width:100%;background:#121a29;color:var(--ink);
+  border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;font-size:16px}
+textarea{font-size:12px;font-family:ui-monospace,monospace;min-height:120px}
+label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.toast{position:fixed;left:50%;top:22%;transform:translateX(-50%);z-index:70;
+  background:linear-gradient(180deg,#c9982f,#a87c22);color:#1a1405;font-weight:700;
+  padding:16px 26px;border-radius:14px;text-align:center;box-shadow:0 10px 36px rgba(0,0,0,.6);
+  display:none;max-width:88%}
+.toast.on{display:block;animation:pop .4s ease}
+.toast .big{font-size:19px;display:block}
+.toast .sm2{font-size:12.5px;font-weight:400;margin-top:3px;display:block}
+@keyframes pop{0%{transform:translateX(-50%) scale(.75);opacity:0}60%{transform:translateX(-50%) scale(1.06)}100%{transform:translateX(-50%) scale(1);opacity:1}}
+.note{font-size:11.5px;color:var(--ink3);line-height:1.7}
+.note b{color:var(--ink2)}
+.warn{background:#2a1a1a;border:1px solid #5b2d2d;border-radius:10px;padding:10px;
+  font-size:11.5px;color:#fca5a5;line-height:1.6;margin-top:10px}
+.spark{display:flex;align-items:flex-end;gap:3px;height:46px;margin-top:9px}
+.spark i{flex:1;background:linear-gradient(180deg,var(--gold2),var(--gold));border-radius:2px;min-height:2px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd">
+    <h1>BodyQuest</h1>
+    <div class="rank" id="hRank">―</div>
+  </div>
+  <div class="bar"><i id="hBar"></i></div>
+  <div class="sub" id="hSub"></div>
+</header>
+
+<main>
+
+<!-- ============ 今日 ============ -->
+<section id="s-today" class="on">
+  <div class="row" style="margin-bottom:14px">
+    <div class="stat"><b id="kWeek">0/2</b><span>今週のトレ</span></div>
+    <div class="stat"><b id="kStreak">0</b><span>連続した週</span></div>
+    <div class="stat"><b id="kTotal">0</b><span>通算トレ</span></div>
+  </div>
+  <h2>本日の課題</h2>
+  <div id="quests"></div>
+  <div id="doneBox" style="display:none">
+    <div class="card" style="border-color:#2f6b45;background:linear-gradient(180deg,#17301f,#182134);text-align:center">
+      <div style="font-size:30px">⚔️</div>
+      <div style="font-weight:700;margin-top:4px">本日クリア</div>
+      <div class="note" style="margin-top:5px">スコア <b id="dScore">0</b> ／ 所要の目安 15〜25分</div>
+    </div>
+  </div>
+  <button class="btn g sm" id="btnUndo" style="margin-top:4px;display:none">今日の記録を取り消す</button>
+  <div class="note" style="margin-top:16px">
+    週2回。ビーモンを週3〜4回に減らして、平日夜2回をここに置き換える。<b>足し算にしない。</b><br>
+    セットは<b>限界の1〜2回手前</b>で止める。追い込み切らない。<br>
+    朝の脈が61超で3日続いたら1日空ける。
+  </div>
+</section>
+
+<!-- ============ 計測 ============ -->
+<section id="s-meas">
+  <h2>今日の計測</h2>
+  <div class="card">
+    <div class="note" style="margin-bottom:10px">
+      起床後・排尿後・<b>トレ前</b>。0.5cm刻み。巻き尺を締めすぎない。<br>
+      <b>トレ直後は測らない</b>（パンプで1cm以上ふくらむ）。
+    </div>
+    <div class="mg">
+      <div><label>上腕 左（力こぶ）cm</label><input type="number" step="0.5" inputmode="decimal" id="mUL"></div>
+      <div><label>上腕 右（力こぶ）cm</label><input type="number" step="0.5" inputmode="decimal" id="mUR"></div>
+      <div><label>大腿 左 cm</label><input type="number" step="0.5" inputmode="decimal" id="mTL"></div>
+      <div><label>大腿 右 cm</label><input type="number" step="0.5" inputmode="decimal" id="mTR"></div>
+      <div><label>胸囲 cm（任意）</label><input type="number" step="0.5" inputmode="decimal" id="mCH"></div>
+      <div><label>腹囲 脱力 cm</label><input type="number" step="0.5" inputmode="decimal" id="mWA"></div>
+    </div>
+    <button class="btn p" style="margin-top:14px" id="btnMeas">記録する</button>
+  </div>
+
+  <h2>直近7回の平均</h2>
+  <div class="card" id="measAvg"></div>
+
+  <h2>TANITA（ジムの体組成計）</h2>
+  <div class="card">
+    <div class="note" style="margin-bottom:10px">条件統一＝<b>トレ直前・無摂取</b>のときだけ入れる。トレ直後は入れない。</div>
+    <div class="mg">
+      <div><label>体重 kg</label><input type="number" step="0.1" inputmode="decimal" id="tW"></div>
+      <div><label>体脂肪率 %</label><input type="number" step="0.1" inputmode="decimal" id="tBF"></div>
+      <div><label>除脂肪量 kg</label><input type="number" step="0.1" inputmode="decimal" id="tFFM"></div>
+      <div><label>筋肉量 kg</label><input type="number" step="0.1" inputmode="decimal" id="tMUS"></div>
+      <div><label>内臓脂肪 Lv</label><input type="number" step="1" inputmode="numeric" id="tVIS"></div>
+      <div><label>脚点</label><input type="number" step="1" inputmode="numeric" id="tLEG"></div>
+    </div>
+    <button class="btn p" style="margin-top:14px" id="btnBia">TANITA を記録</button>
+    <div class="note" style="margin-top:8px" id="biaN"></div>
+  </div>
+
+  <h2>InBody</h2>
+  <div class="card">
+    <div class="note" style="margin-bottom:10px">
+      測れたときだけ。<b>TANITAと同じ日に両方測れると、2機種のずれが定数として出せます。</b>
+    </div>
+    <div class="mg">
+      <div><label>体重 kg</label><input type="number" step="0.1" inputmode="decimal" id="iW"></div>
+      <div><label>骨格筋量 SMM kg</label><input type="number" step="0.1" inputmode="decimal" id="iSMM"></div>
+      <div><label>体脂肪量 kg</label><input type="number" step="0.1" inputmode="decimal" id="iFAT"></div>
+      <div><label>体脂肪率 %</label><input type="number" step="0.1" inputmode="decimal" id="iBF"></div>
+      <div><label>右腕 除脂肪 kg</label><input type="number" step="0.01" inputmode="decimal" id="iRA"></div>
+      <div><label>左腕 除脂肪 kg</label><input type="number" step="0.01" inputmode="decimal" id="iLA"></div>
+      <div><label>体幹 除脂肪 kg</label><input type="number" step="0.1" inputmode="decimal" id="iTR"></div>
+      <div><label>位相角 PhA °</label><input type="number" step="0.1" inputmode="decimal" id="iPHA"></div>
+      <div><label>右脚 除脂肪 kg</label><input type="number" step="0.01" inputmode="decimal" id="iRL"></div>
+      <div><label>左脚 除脂肪 kg</label><input type="number" step="0.01" inputmode="decimal" id="iLL"></div>
+    </div>
+    <button class="btn p" style="margin-top:14px" id="btnIb">InBody を記録</button>
+    <div class="warn" style="margin-top:10px">
+      InBodyの<b>骨格筋量（SMM）</b>とTANITAの<b>筋肉量</b>は定義が違います（SMMは骨格筋だけ、
+      TANITAの筋肉量は心筋・平滑筋を含む除脂肪軟組織）。<b>絶対値を比べない。</b>
+      それぞれの系列の<b>傾き</b>どうしで比べます。
+    </div>
+    <div class="note" style="margin-top:8px" id="ibN"></div>
+  </div>
+
+  <h2>測る位置（毎回ここで固定する）</h2>
+  <div class="card note">
+    <b>上腕</b>　肩の出っぱり（肩峰）と肘の先（肘頭）の<b>ちょうど中間</b>。
+    力こぶを作った状態で、いちばん太いところ。左右とも。<br><br>
+    <b>大腿</b>　ひざの皿の上ふちから<b>15cm上</b>。立って、体重を両脚に均等にかける。<br><br>
+    <b>胸囲</b>　乳頭の高さ。軽く息を吐いた状態。<b>姿勢の影響が大きいので主指標にしない。</b><br><br>
+    <b>腹囲</b>　臍の高さ・立位・軽く息を吐く（いままでどおり）。
+    <div class="warn">
+      周径は <b>筋 ＋ 皮下脂肪 ＋ 水分</b> の合計。減量中は脂肪が減るので、
+      <b>上腕が横ばい＝筋は増えている</b>ことがありうる。単独では読まず、体重と並べて見る。
+    </div>
+  </div>
+</section>
+
+<!-- ============ 予測 ============ -->
+<section id="s-pred">
+  <div class="card" style="border-color:#4b3d16;background:linear-gradient(180deg,#221d10,#182134)">
+    <div style="font-size:12px;color:var(--gold2);font-weight:700">このモデルは実測で検証済み</div>
+    <div class="note" style="margin-top:6px">
+      2026-08-23〜11-21 の91日で、記録から積んだ<b>累積赤字 39,431 kcal</b>＝脂肪換算 <b>5.48 kg</b>。
+      同じ期間の<b>実測の体重変化は −5.6 kg</b>。<b style="color:#4ade80">差 0.12 kg（2%）。</b><br>
+      だから「予測と実測の差」には意味があります。ずれたら、モデルか記録のどちらかに理由がある。
+    </div>
+  </div>
+
+  <h2 id="predH">今日の予測 ↔ 実測</h2>
+  <div class="card"><table id="predT"></table>
+    <div class="note" style="margin-top:10px">
+      <b>想定内</b>＝差が（モデルの幅＋計器の誤差）の内側。<b>情報は出ない</b>のが正常です。<br>
+      <b style="color:#f87171">★ずれ</b>＝外側。ここだけが読む価値のある差です。
+    </div>
+  </div>
+
+  <h2>差の読み方</h2>
+  <div class="card"><table id="diagT"></table></div>
+
+  <h2>12週後の予測</h2>
+  <div class="card"><table id="pred12"></table>
+    <div class="note" style="margin-top:10px" id="pred12N"></div>
+  </div>
+
+  <h2>系列の傾きで見る（単回では読めないもの）</h2>
+  <div class="card" id="slopeBox"></div>
+
+  <h2>使っている係数</h2>
+  <div class="card note" id="calBox"></div>
+</section>
+
+<!-- ============ 記録 ============ -->
+<section id="s-log">
+  <h2 id="calTitle">カレンダー</h2>
+  <div class="card">
+    <div class="calh"><span>日</span><span>月</span><span>火</span><span>水</span><span>木</span><span>金</span><span>土</span></div>
+    <div class="cal" id="cal"></div>
+    <div class="note" style="margin-top:10px">
+      <span style="color:var(--up)">■</span> トレをやった日
+      <span style="color:var(--blue)">■</span> 計測だけの日
+    </div>
+    <div class="row" style="margin-top:10px">
+      <button class="btn g sm" id="calPrev">← 前の月</button>
+      <button class="btn g sm" id="calNext">次の月 →</button>
+    </div>
+  </div>
+
+  <h2>スコアの推移（直近12回）</h2>
+  <div class="card">
+    <div class="spark" id="spark"></div>
+    <div class="note" style="margin-top:8px" id="sparkNote"></div>
+  </div>
+
+  <h2>種目ごとの到達</h2>
+  <div class="card"><table id="exTable"></table></div>
+
+  <h2>12週の目標</h2>
+  <div class="card" id="goalBox"></div>
+</section>
+
+<!-- ============ 設定 ============ -->
+<section id="s-set">
+  <h2>セット数</h2>
+  <div class="card">
+    <div class="row">
+      <button class="btn sm" id="set2">2セット</button>
+      <button class="btn sm" id="set3">3セット</button>
+    </div>
+    <div class="note" style="margin-top:9px">最初の2週は2セット。3週目から3セット。体幹は常に2セット。</div>
+  </div>
+
+  <h2>レベルの手動変更</h2>
+  <div class="card" id="lvEdit"></div>
+
+  <h2>予測モデルの前提</h2>
+  <div class="card">
+    <div class="mg">
+      <div><label>1日の平均赤字 kcal</label><input type="number" step="10" inputmode="numeric" id="pDef"></div>
+      <div><label>起点の日</label><input type="text" id="pD0" placeholder="2026-11-21"></div>
+      <div><label>起点 体重 kg</label><input type="number" step="0.1" inputmode="decimal" id="pW0"></div>
+      <div><label>起点 除脂肪 kg</label><input type="number" step="0.1" inputmode="decimal" id="pF0"></div>
+      <div><label>除脂肪 増 下限 kg/月</label><input type="number" step="0.01" inputmode="decimal" id="pGL"></div>
+      <div><label>除脂肪 増 上限 kg/月</label><input type="number" step="0.01" inputmode="decimal" id="pGH"></div>
+    </div>
+    <button class="btn p sm" style="margin-top:12px" id="btnPSave">予測の前提を保存</button>
+    <div class="note" style="margin-top:9px">
+      赤字を変えたら（維持に切り替える等）ここを更新する。<b>起点も今日の実測に打ち直してよい</b>——
+      そのときは予測が引き直され、差の履歴はリセットされます。
+    </div>
+  </div>
+
+  <h2>バックアップ</h2>
+  <div class="card">
+    <div class="note">この端末のブラウザにだけ保存されます。機種変更や履歴の消去で消えるので、ときどき書き出してください。</div>
+    <button class="btn g sm" style="margin-top:10px" id="btnExp">書き出す（コピー用に表示）</button>
+    <textarea id="ioBox" style="margin-top:10px" placeholder="ここに貼り付けて「読み込む」"></textarea>
+    <button class="btn g sm" style="margin-top:8px" id="btnImp">読み込む</button>
+  </div>
+
+  <h2>この設計の出どころ</h2>
+  <div class="card note">
+    足りないのは強度でも努力でもなく<b>漸進性過負荷</b>という構造（方針17）。<br>
+    重さそのものは重要ではなく、30〜85% 1RMの広い範囲で<b>限界近くまで追い込めば肥大は同等</b>
+    （Morton 2016）。だから自重で成立する。成立しないのは<b>同じ難度を繰り返すこと</b>のほう。<br><br>
+    <b>目標にしないもの</b>：筋肉量・除脂肪量・体脂肪率。いずれもBIAの計算値で、
+    76分で体水分が1.23kg動いた実測がある（2026-11-21）。半年で起きうる変化はその振れ幅の中。
+  </div>
+
+  <h2 style="color:#7f3b3b">全消去</h2>
+  <div class="card">
+    <button class="btn sm" style="color:#fca5a5;border-color:#5b2d2d" id="btnWipe">すべての記録を消す</button>
+  </div>
+</section>
+
+</main>
+
+<nav>
+  <button data-t="today" class="on"><i>⚔️</i>今日</button>
+  <button data-t="meas"><i>📏</i>計測</button>
+  <button data-t="pred"><i>🎯</i>予測</button>
+  <button data-t="log"><i>📈</i>記録</button>
+  <button data-t="set"><i>⚙️</i>設定</button>
+</nav>
+
+<div class="ov" id="ov"><div class="sheet" id="sheet"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ========== 種目とレベルのはしご ========== */
+/* w = レベル係数（相対的な負荷の目安。実測ではない）
+   lo/hi = 回数（または秒）の下限・上限。全セットで hi に届いたらレベルが上がる
+   u = 単位, k = スコア換算係数（秒は 1/3） */
+const EX = [
+ {id:'sq', nm:'スクワット', ic:'🦵', part:'下半身を押す',
+  L:[{n:'椅子スクワット',h:'椅子に腰を下ろして立つ',w:0.5,lo:10,hi:15,u:'回',k:1},
+     {n:'自重スクワット',h:'腿が床と平行になるまで',w:0.8,lo:10,hi:15,u:'回',k:1},
+     {n:'テンポスクワット',h:'下ろし3秒・いちばん下で1秒止める',w:1.0,lo:8,hi:12,u:'回',k:1},
+     {n:'スプリットスクワット',h:'足を前後に開いて片脚ずつ。回数は片脚あたり',w:1.4,lo:8,hi:12,u:'回',k:1},
+     {n:'ブルガリアン',h:'後ろ足を椅子に乗せる。片脚あたり',w:1.8,lo:6,hi:10,u:'回',k:1},
+     {n:'片脚スクワット（補助）',h:'何かにつかまって。片脚あたり',w:2.3,lo:5,hi:8,u:'回',k:1}]},
+
+ {id:'pu', nm:'プッシュアップ', ic:'💪', part:'上半身を押す',
+  L:[{n:'壁プッシュアップ',h:'壁に手をついて',w:0.3,lo:10,hi:15,u:'回',k:1},
+     {n:'台に手をついて',h:'台が低いほどきつい。高さで細かく調整できる',w:0.5,lo:10,hi:15,u:'回',k:1},
+     {n:'膝つきプッシュアップ',h:'膝を床につけて',w:0.7,lo:8,hi:12,u:'回',k:1},
+     {n:'通常プッシュアップ',h:'胸が床の手前まで',w:1.0,lo:8,hi:12,u:'回',k:1},
+     {n:'テンポプッシュアップ',h:'下ろし3秒・胸が床の手前で1秒止める',w:1.25,lo:6,hi:10,u:'回',k:1},
+     {n:'足上げプッシュアップ',h:'足を椅子に乗せる',w:1.4,lo:6,hi:10,u:'回',k:1},
+     {n:'アーチャー',h:'左右に体重を寄せる。回数は片側あたり',w:1.8,lo:5,hi:8,u:'回',k:1}]},
+
+ {id:'hh', nm:'ヒップヒンジ', ic:'🏋️', part:'体の後ろ側',
+  L:[{n:'グッドモーニング',h:'手を頭の後ろ。背中はまっすぐのまま股関節から折る',w:0.5,lo:10,hi:15,u:'回',k:1},
+     {n:'片脚デッドリフト',h:'自重。反対の脚を後ろに伸ばす。片脚あたり',w:0.9,lo:8,hi:12,u:'回',k:1},
+     {n:'ヒップスラスト',h:'肩甲骨を椅子に乗せ、腰を持ち上げる',w:1.2,lo:10,hi:15,u:'回',k:1},
+     {n:'片脚ヒップスラスト',h:'片脚あたり',w:1.8,lo:6,hi:10,u:'回',k:1},
+     {n:'ノルディックカール',h:'足を固定して前に倒れ、手で受ける。L4が余裕になるまで手を出さない',w:2.5,lo:3,hi:6,u:'回',k:1}]},
+
+ {id:'ro', nm:'ロウ', ic:'🪢', part:'上半身を引く',
+  L:[{n:'タオル・立て気味',h:'ドアの蝶番側にタオルを挟み、体を立て気味にして引く',w:0.5,lo:10,hi:15,u:'回',k:1},
+     {n:'タオル・倒す／机・膝曲げ',h:'体を倒すほどきつい。机の下なら膝を曲げて',w:0.8,lo:8,hi:12,u:'回',k:1},
+     {n:'机の下・脚を伸ばして',h:'天板の縁を握って体を引き上げる。机の強度を必ず確かめる',w:1.1,lo:8,hi:12,u:'回',k:1},
+     {n:'片手ずつ／リュックを重く',h:'本を詰めたリュックで前傾して引く。重さは冊数で調整',w:1.6,lo:6,hi:10,u:'回',k:1}]},
+
+ {id:'cr', nm:'体幹', ic:'🧱', part:'姿勢と腰の保護',
+  L:[{n:'デッドバグ',h:'仰向けで対角の手足をゆっくり伸ばす',w:0.6,lo:8,hi:12,u:'回',k:1},
+     {n:'プランク',h:'肘とつま先で一直線',w:0.8,lo:30,hi:60,u:'秒',k:1/3},
+     {n:'片脚プランク',h:'プランクで片脚を上げる。秒数は片脚あたり',w:1.1,lo:20,hi:40,u:'秒',k:1/3},
+     {n:'サイドプランク',h:'左右それぞれ。秒数は片側あたり',w:1.3,lo:20,hi:45,u:'秒',k:1/3},
+     {n:'ロールアウト',h:'立て膝からタオルを床で滑らせる',w:1.8,lo:5,hi:10,u:'回',k:1}]}
+];
+
+const RANKS=[[0,'新兵'],[600,'訓練兵'],[1800,'斥候'],[4000,'兵長'],[7500,'剣士'],
+             [13000,'戦士'],[21000,'猛者'],[32000,'古豪'],[48000,'豪傑'],[70000,'不屈'],[100000,'鉄人']];
+
+const KEY='kintore_state';
+const CAL={ wcA:0.856, wcB:21.80, wcSD:0.66, ffmSD:0.61, bfSD:0.54, wSD:0.15, kcalPerKg:7200 };
+const D0=()=>({lv:{sq:0,pu:0,hh:0,ro:0,cr:0},sets:2,log:[],meas:[],bia:[],ib:[],today:null,
+  base:{d:'2026-11-21',w:72.2,ffm:58.6,bf:18.8,wc:84.21,vis:11},
+  model:{def:433,gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},ver:2});
+let S=load(), calM=new Date();
+
+function load(){
+  try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); return Object.assign(D0(),o);} }
+  catch(e){}
+  return D0();
+}
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(S)); }catch(e){} }
+
+function ds(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function lvOf(e){ return EX.find(x=>x.id===e).L[S.lv[e]]; }
+function setsOf(e){ return e==='cr'?2:S.sets; }
+
+/* 今日の入力バッファ */
+function buf(){
+  if(!S.today || S.today.d!==ds()){ S.today={d:ds(),v:{},done:false}; }
+  EX.forEach(e=>{ if(!S.today.v[e.id]) S.today.v[e.id]=new Array(setsOf(e.id)).fill(0);
+                  else if(S.today.v[e.id].length!==setsOf(e.id)){
+                    const a=S.today.v[e.id].slice(0,setsOf(e.id));
+                    while(a.length<setsOf(e.id))a.push(0); S.today.v[e.id]=a; } });
+  return S.today;
+}
+function exScore(id,arr,lvIdx){
+  const L=EX.find(x=>x.id===id).L[lvIdx===undefined?S.lv[id]:lvIdx];
+  return arr.reduce((s,v)=>s+v*L.w*L.k,0);
+}
+function dayScore(rec){ return EX.reduce((s,e)=>s+exScore(e.id,rec.v[e.id]||[],rec.lv?rec.lv[e.id]:undefined),0); }
+function totalScore(){ return S.log.reduce((s,r)=>s+(r.score||0),0); }
+function rankOf(t){ let r=RANKS[0],nx=null;
+  for(let i=0;i<RANKS.length;i++){ if(t>=RANKS[i][0]){r=RANKS[i];nx=RANKS[i+1]||null;} }
+  return {nm:r[1],cur:r[0],next:nx?nx[0]:null,nxnm:nx?nx[1]:null}; }
+
+function weekKey(d){ const x=new Date(d); x.setDate(x.getDate()-x.getDay()); return ds(x); }
+function weekCount(){ const w=weekKey(new Date()); return S.log.filter(r=>weekKey(new Date(r.d+'T00:00'))===w).length; }
+function weekStreak(){
+  const done=new Set(S.log.map(r=>weekKey(new Date(r.d+'T00:00'))));
+  const cnt={}; S.log.forEach(r=>{const k=weekKey(new Date(r.d+'T00:00'));cnt[k]=(cnt[k]||0)+1;});
+  let n=0, c=new Date(); c.setDate(c.getDate()-c.getDay());
+  if((cnt[ds(c)]||0)<2) c.setDate(c.getDate()-7);   // 今週が未達なら前週から数える
+  while((cnt[ds(c)]||0)>=2){ n++; c.setDate(c.getDate()-7); }
+  return n;
+}
+
+/* ========== 描画 ========== */
+function renderHead(){
+  const t=totalScore(), r=rankOf(t);
+  document.getElementById('hRank').textContent=r.nm+'　'+Math.round(t).toLocaleString();
+  const pc=r.next?Math.min(100,(t-r.cur)/(r.next-r.cur)*100):100;
+  document.getElementById('hBar').style.width=pc+'%';
+  document.getElementById('hSub').innerHTML = r.next
+    ? '次は <b style="color:#ffd27a">'+r.nxnm+'</b>　あと '+Math.ceil(r.next-t).toLocaleString()+''
+    : '最高位';
+}
+
+function renderToday(){
+  const b=buf(), wrap=document.getElementById('quests');
+  document.getElementById('kWeek').textContent=weekCount()+'/2';
+  document.getElementById('kStreak').textContent=weekStreak();
+  document.getElementById('kTotal').textContent=S.log.length;
+  wrap.innerHTML='';
+  const rec = b.done ? S.log.find(r=>r.d===b.d) : null;
+  EX.forEach(e=>{
+    // 記録済みの日は「そのとき挑んだレベル」で表示する（確定でレベルが上がるため）
+    const li = (rec && rec.lv) ? rec.lv[e.id] : S.lv[e.id];
+    const L = e.L[li], v=b.v[e.id], n=setsOf(e.id);
+    const all=v.length>0 && v.every(x=>x>=L.hi), any=v.some(x=>x>0);
+    const nextUp = rec ? (S.lv[e.id]>li) : all;
+    const c=document.createElement('div');
+    c.className='card q'+(any?' done':'');
+    c.innerHTML='<div class="qh"><div class="ic">'+e.ic+'</div>'+
+      '<div><div class="nm">'+e.nm+'</div><div style="font-size:10.5px;color:var(--ink3)">'+e.part+'</div></div>'+
+      '<div class="lv">Lv.'+(li+1)+'</div></div>'+
+      '<div class="qd">'+L.n+'</div>'+
+      '<div class="qt">目標　'+L.lo+'〜'+L.hi+L.u+' × '+n+'セット</div>'+
+      '<div class="qr">'+v.map(x=>'<span class="pill'+(x>=L.hi?' hit':'')+'">'+(x||'―')+'</span>').join('')+'</div>'+
+      (nextUp ? '<div class="qt" style="color:var(--up);margin-top:7px">▲ 次回から Lv.'+(S.lv[e.id]+1)+
+                '「'+e.L[S.lv[e.id]].n+'」'+(rec?'':'（記録を確定すると上がります）')+'</div>' : '')+
+      (any?'<div class="tick">✓</div>':'');
+    c.onclick=()=>openSheet(e.id);
+    wrap.appendChild(c);
+  });
+  const anyAll=EX.every(e=>b.v[e.id].some(x=>x>0));
+  document.getElementById('doneBox').style.display=(b.done?'block':'none');
+  document.getElementById('btnUndo').style.display=(b.done?'block':'none');
+  if(b.done) document.getElementById('dScore').textContent=Math.round(EX.reduce((s,e)=>s+exScore(e.id,b.v[e.id]),0));
+  if(anyAll && !b.done) finishDay();
+  renderHead();
+}
+
+function openSheet(id){
+  const e=EX.find(x=>x.id===id), L=lvOf(id), b=buf(), n=setsOf(id);
+  const sh=document.getElementById('sheet');
+  let h='<div class="sh"><div class="ic">'+e.ic+'</div><div><div class="nm">'+e.nm+'</div>'+
+        '<div style="font-size:11px;color:var(--ink3)">'+e.part+'</div></div><div class="x" id="shX">✕</div></div>'+
+        '<div class="lvbox"><div class="t">Lv.'+(S.lv[id]+1)+' / '+e.L.length+'</div><div class="n">'+L.n+'</div>'+
+        '<div class="h">'+L.h+'</div></div>';
+  for(let i=0;i<n;i++){
+    h+='<div class="setrow"><div class="lb">'+(i+1)+'セット目</div><div class="stp">'+
+       '<button data-m="-1" data-i="'+i+'">−</button>'+
+       '<div class="v" id="v'+i+'">'+b.v[id][i]+'<small>'+L.u+'</small></div>'+
+       '<button data-m="1" data-i="'+i+'">＋</button></div></div>';
+  }
+  h+='<div class="hint">目標は <b style="color:#e8eefc">'+L.lo+'〜'+L.hi+L.u+'</b>。'+
+     '<b style="color:#e8eefc">限界の1〜2回手前</b>で止める。<br>'+
+     '全セットで '+L.hi+L.u+' に届いたら、次回はレベルが1つ上がります。</div>'+
+     '<button class="btn p" style="margin-top:14px" id="shOK">記録する</button>'+
+     '<div class="ladder"><div style="font-size:11px;color:var(--ink3);margin:14px 0 6px">はしご</div>'+
+      e.L.map((l,i)=>'<div class="r '+(i===S.lv[id]?'cur':(i<S.lv[id]?'past':''))+'">'+
+        '<span class="l">L'+(i+1)+'</span><span>'+l.n+'　<span style="color:var(--ink3)">'+l.lo+'〜'+l.hi+l.u+'</span></span></div>').join('')+
+     '</div>';
+  sh.innerHTML=h;
+  const vals=b.v[id].slice();
+  sh.querySelectorAll('.stp button').forEach(btn=>{
+    btn.onclick=()=>{ const i=+btn.dataset.i, m=+btn.dataset.m;
+      const step=(L.u==='秒')?5:1;
+      vals[i]=Math.max(0,vals[i]+m*step);
+      document.getElementById('v'+i).innerHTML=vals[i]+'<small>'+L.u+'</small>'; };
+  });
+  document.getElementById('shX').onclick=closeSheet;
+  document.getElementById('shOK').onclick=()=>{
+    b.v[id]=vals;
+    const lvWas=S.lv[id];
+    const up = vals.length>0 && vals.every(x=>x>=L.hi) && lvWas<e.L.length-1;
+    save(); closeSheet(); renderToday();
+    // 5種目そろうと renderToday の中で finishDay が走り、その中でレベルが上がる。
+    // そのときは finishDay 側の告知を残す（ここで上書きしない）。
+    if(up && !buf().done)
+      toast('\u25b2 レベルアップ間近','全セットで上限に届きました。<br>5種目そろえて記録を確定すると Lv.'+(lvWas+2)+'「'+e.L[lvWas+1].n+'」へ');
+  };
+  document.getElementById('ov').classList.add('on');
+}
+function closeSheet(){ document.getElementById('ov').classList.remove('on'); }
+document.getElementById('ov').onclick=ev=>{ if(ev.target.id==='ov') closeSheet(); };
+
+function finishDay(){
+  const b=buf(); const lvSnap=Object.assign({},S.lv);
+  const sc=EX.reduce((s,e)=>s+exScore(e.id,b.v[e.id]),0);
+  const ups=[];
+  EX.forEach(e=>{ const L=lvOf(e.id);
+    if(b.v[e.id].every(x=>x>=L.hi) && S.lv[e.id]<e.L.length-1){ S.lv[e.id]++; ups.push(e); } });
+  S.log=S.log.filter(r=>r.d!==b.d);
+  S.log.push({d:b.d,v:JSON.parse(JSON.stringify(b.v)),lv:lvSnap,score:Math.round(sc)});
+  S.log.sort((a,c)=>a.d<c.d?-1:1);
+  b.done=true; save();
+  if(ups.length){
+    toast('▲ レベルアップ ×'+ups.length,
+      ups.map(e=>e.nm+' → Lv.'+(S.lv[e.id]+1)+'「'+e.L[S.lv[e.id]].n+'」').join('<br>')+
+      '<br><br>上げた直後は回数が下限まで落ちます。それが正しい。');
+  }else{
+    const r=rankOf(totalScore());
+    toast('⚔️ 本日クリア','スコア '+Math.round(sc)+'　累計 '+Math.round(totalScore()).toLocaleString()+'（'+r.nm+'）');
+  }
+  renderToday(); renderLog();
+}
+document.getElementById('btnUndo').onclick=()=>{
+  const b=buf(); const rec=S.log.find(r=>r.d===b.d);
+  if(rec && rec.lv) S.lv=Object.assign({},rec.lv);
+  S.log=S.log.filter(r=>r.d!==b.d);
+  S.today={d:ds(),v:{},done:false}; save(); renderToday(); renderLog();
+};
+
+/* ========== 予測エンジン ========== */
+function dayDiff(a,b){ return Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/86400000); }
+function predAt(dstr){
+  const B=S.base, M=S.model, t=Math.max(0,dayDiff(B.d,dstr));
+  const gly=Math.min(1,t/28), mo=t/30.44;
+  const gLo=M.glyLo*gly + M.gLo*mo, gHi=M.glyHi*gly + M.gHi*mo;   // 除脂肪の増加（帯）
+  const fatLoss=M.def*t/CAL.kcalPerKg;                             // 脂肪の減少（点）
+  const wLo=B.w-fatLoss+gLo, wHi=B.w-fatLoss+gHi;
+  const fLo=B.ffm+gLo, fHi=B.ffm+gHi;
+  const fatLo=wLo-fHi, fatHi=wHi-fLo;
+  return { t:t,
+    w:[wLo,wHi], ffm:[fLo,fHi], fat:[fatLo,fatHi],
+    bf:[fatLo/wLo*100, fatHi/wHi*100],
+    // 腹囲は回帰の「傾き」だけを使い、切片ではなく起点の実測値に錨を打つ。
+    // こうすると回帰の切片誤差（残差SD 0.66cm）が予測に乗らない。
+    wc:[B.wc+CAL.wcA*(wLo-B.w), B.wc+CAL.wcA*(wHi-B.w)] };
+}
+const MET=[
+ {k:'w',  nm:'体重',     u:'kg', sd:CAL.wSD,   nd:1, get:r=>r.w},
+ {k:'ffm',nm:'除脂肪量', u:'kg', sd:CAL.ffmSD, nd:1, get:r=>r.ffm},
+ {k:'fat',nm:'脂肪量',   u:'kg', sd:CAL.ffmSD, nd:1, get:r=>(r.w&&r.bf)?r.w*r.bf/100:null},
+ {k:'bf', nm:'体脂肪率', u:'%',  sd:CAL.bfSD,  nd:1, get:r=>r.bf},
+ {k:'wc', nm:'腹囲7点',  u:'cm', sd:CAL.wcSD,  nd:1, get:null}
+];
+function lastBia(){ return S.bia.length?S.bia[S.bia.length-1]:null; }
+function renderPred(){
+  const b=lastBia(), today=ds();
+  const dref = b ? b.d : today;
+  const P=predAt(dref);
+  const wcNow=avg7('wa');
+  document.getElementById('predH').textContent =
+    b ? ('予測 ↔ 実測（'+b.d+' のTANITA）') : '予測（TANITAの記録を入れると差が出ます）';
+  let flags={};
+  let h='<tr><th>項目</th><th>予測</th><th>実測</th><th>差</th><th>判定</th></tr>';
+  MET.forEach(m=>{
+    const lo=P[m.k][0], hi=P[m.k][1];
+    let act = (m.k==='wc') ? (wcNow?wcNow.a:null) : (b?m.get(b):null);
+    let diff=null, verd='—', col='var(--ink3)';
+    if(act!==null && act!==undefined && isFinite(act)){
+      const mid=(lo+hi)/2; diff=act-mid;
+      const loB=lo-2*m.sd, hiB=hi+2*m.sd;
+      if(act<loB){ verd='★ 下にずれ'; col='var(--hot)'; flags[m.k]=-1; }
+      else if(act>hiB){ verd='★ 上にずれ'; col='var(--hot)'; flags[m.k]=1; }
+      else { verd='想定内'; col='var(--ink3)'; flags[m.k]=0; }
+    }
+    h+='<tr><td>'+m.nm+'</td>'+
+       '<td>'+lo.toFixed(m.nd)+'〜'+hi.toFixed(m.nd)+'</td>'+
+       '<td>'+((act!==null&&act!==undefined&&isFinite(act))?'<b>'+act.toFixed(m.nd)+'</b>':'—')+'</td>'+
+       '<td>'+(diff===null?'—':(diff>0?'+':'')+diff.toFixed(m.nd))+'</td>'+
+       '<td style="color:'+col+';font-size:11px">'+verd+'</td></tr>';
+  });
+  document.getElementById('predT').innerHTML=h;
+
+  // 差の読み方（体重 × 除脂肪 の組み合わせ）
+  const DIAG=[
+   ['予測どおり','予測どおり','モデルが当たっている。記録も現実も食い違いがない'],
+   ['予測より重い','増えている','<b style="color:#4ade80">筋が予測より増えた。</b>望む結果'],
+   ['予測より重い','横ばい','記録の漏れ（赤字が実際は小さい）か、水分・グリコーゲン'],
+   ['予測より軽い','横ばい','赤字が実際は大きい（記録が多め）か、活動量が多い'],
+   ['予測どおり','減っている','<b style="color:#f87171">赤字が大きすぎる</b>か、たんぱく質・刺激が足りない']
+  ];
+  const now=(flags.w===undefined)?null:[flags.w,flags.ffm];
+  let d='<tr><th>体重</th><th>除脂肪</th><th>読み</th></tr>';
+  DIAG.forEach((r,i)=>{
+    let hit=false;
+    if(now){ const [fw,ff]=now;
+      hit = (i===0&&fw===0&&ff===0)||(i===1&&fw===1&&ff===1)||(i===2&&fw===1&&ff===0)||
+            (i===3&&fw===-1&&ff===0)||(i===4&&fw===0&&ff===-1); }
+    d+='<tr'+(hit?' style="background:#2a2412"':'')+'><td style="font-size:11.5px">'+r[0]+'</td>'+
+       '<td style="font-size:11.5px">'+r[1]+'</td>'+
+       '<td style="text-align:left;font-size:11.5px;color:var(--ink2)">'+(hit?'◀ ':'')+r[2]+'</td></tr>';
+  });
+  document.getElementById('diagT').innerHTML=d;
+
+  // 12週後
+  const d12=new Date(S.base.d+'T00:00'); d12.setDate(d12.getDate()+84);
+  const P12=predAt(ds(d12));
+  let t12='<tr><th>項目</th><th>起点</th><th>'+ds(d12)+' の予測</th><th>変化</th></tr>';
+  [['w','体重','kg',S.base.w],['ffm','除脂肪量','kg',S.base.ffm],
+   ['bf','体脂肪率','%',S.base.bf],['wc','腹囲7点','cm',S.base.wc]].forEach(([k,nm,u,b0])=>{
+    const lo=P12[k][0],hi=P12[k][1];
+    t12+='<tr><td>'+nm+'</td><td>'+b0.toFixed(1)+'</td><td><b>'+lo.toFixed(1)+'〜'+hi.toFixed(1)+'</b></td>'+
+         '<td>'+((lo-b0)>0?'+':'')+(lo-b0).toFixed(1)+'〜'+((hi-b0)>0?'+':'')+(hi-b0).toFixed(1)+'</td></tr>';
+  });
+  document.getElementById('pred12').innerHTML=t12;
+  document.getElementById('pred12N').innerHTML=
+    '前提：1日の平均赤字 <b>'+S.model.def+' kcal</b>／除脂肪の増加 <b>'+S.model.gLo+'〜'+S.model.gHi+
+    ' kg/月</b>（48歳・レジスタンス初心者・軽度の赤字）／最初の4週に水分とグリコーゲンで <b>+'+
+    S.model.glyLo+'〜'+S.model.glyHi+' kg</b>。<br>'+
+    '赤字をやめて維持に切り替えるなら、設定で赤字を0にしてください。予測が引き直されます。';
+
+  // 傾き
+  const n=S.bia.length;
+  let sb='';
+  if(n<3){ sb='<div class="note">TANITAの記録が <b>'+n+'</b> 回。傾きを出すには最低3回、実用には8回以上。</div>'; }
+  else{
+    const x=S.bia.map(r=>dayDiff(S.base.d,r.d));
+    function slope(vals){ const pts=vals.map((v,i)=>[x[i],v]).filter(p=>p[1]!==null&&isFinite(p[1]));
+      if(pts.length<3) return null;
+      const mx=pts.reduce((s,p)=>s+p[0],0)/pts.length, my=pts.reduce((s,p)=>s+p[1],0)/pts.length;
+      const sxx=pts.reduce((s,p)=>s+(p[0]-mx)**2,0); if(!sxx) return null;
+      const b1=pts.reduce((s,p)=>s+(p[0]-mx)*(p[1]-my),0)/sxx;
+      const res=pts.map(p=>p[1]-(my+b1*(p[0]-mx)));
+      const sde=Math.sqrt(res.reduce((s,r)=>s+r*r,0)/Math.max(1,pts.length-2));
+      return {b:b1*30.44, se:sde/Math.sqrt(sxx)*30.44, n:pts.length}; }
+    const sf=slope(S.bia.map(r=>r.ffm)), sw=slope(S.bia.map(r=>r.w));
+    sb='<table><tr><th>系列</th><th>傾き kg/月</th><th>誤差 ±</th><th>n</th><th>判定</th></tr>';
+    [['除脂肪量',sf,(S.model.gLo+S.model.gHi)/2],['体重',sw,null]].forEach(([nm,o,exp])=>{
+      if(!o){ sb+='<tr><td>'+nm+'</td><td colspan="4">—</td></tr>'; return; }
+      const sig=Math.abs(o.b)>2*o.se;
+      sb+='<tr><td>'+nm+'</td><td><b>'+(o.b>0?'+':'')+o.b.toFixed(2)+'</b></td><td>'+o.se.toFixed(2)+
+          '</td><td>'+o.n+'</td><td style="font-size:11px;color:'+(sig?'var(--up)':'var(--ink3)')+'">'+
+          (sig?'0と区別できる':'まだ0と区別できない')+'</td></tr>';
+    });
+    sb+='</table><div class="note" style="margin-top:10px">'+
+      '<b>単回のBIAでは読めないものが、系列の傾きなら読めます。</b>条件統一した系列の除脂肪のばらつきは '+
+      'SD <b>'+CAL.ffmSD.toFixed(2)+' kg</b>（本人の15回の実測から算出）。'+
+      '傾きの誤差は n が増えるほど小さくなるので、12週ためれば月 +0.1〜0.2 kg でも判定できる見込みです。</div>';
+  }
+  document.getElementById('slopeBox').innerHTML=sb;
+
+  document.getElementById('calBox').innerHTML=
+    '<b>すべて本人の実測から較正した値です（文献値ではありません）。</b><br><br>'+
+    '腹囲 ＝ <b>'+CAL.wcA+'</b> × 体重 ＋ <b>'+CAL.wcB+'</b>　（r²=0.873、n=15、残差SD '+CAL.wcSD+' cm）<br>'+
+    '　→ 体重1kgにつき腹囲 <b>'+CAL.wcA.toFixed(2)+' cm</b><br><br>'+
+    '除脂肪量（条件統一系列）の再現性　SD <b>'+CAL.ffmSD+' kg</b>（トレンド除去後、n=15）<br>'+
+    '体脂肪率の再現性　SD <b>'+CAL.bfSD+' %</b><br>'+
+    '脂肪1kg ＝ <b>'+CAL.kcalPerKg.toLocaleString()+' kcal</b><br><br>'+
+    '<b>訂正</b>：以前「BIAの内訳は76分で1.23kg動くので使えない」と書きましたが、'+
+    'あれは<b>トレ前→トレ直後</b>の対での値です。<b>条件統一（トレ直前・無摂取）の系列に限れば SD 0.61 kg</b>で、'+
+    '系列の傾きとしてなら十分に使えます。';
+}
+
+/* ========== 計測 ========== */
+const MF=[['ul','上腕 左'],['ur','上腕 右'],['tl','大腿 左'],['tr','大腿 右'],['ch','胸囲'],['wa','腹囲']];
+document.getElementById('btnMeas').onclick=()=>{
+  const g=id=>{const v=parseFloat(document.getElementById(id).value); return isFinite(v)?v:null;};
+  const rec={d:ds(),ul:g('mUL'),ur:g('mUR'),tl:g('mTL'),tr:g('mTR'),ch:g('mCH'),wa:g('mWA')};
+  if(MF.every(f=>rec[f[0]]===null)){ toast('入力がありません','どれか1つは数字を入れてください'); return; }
+  S.meas=S.meas.filter(m=>m.d!==rec.d); S.meas.push(rec);
+  S.meas.sort((a,c)=>a.d<c.d?-1:1); save(); renderMeas(); renderLog();
+  toast('📏 記録しました', S.meas.length>=7?'直近7回の平均を更新しました':'7回ためると平均で読めます（あと'+(7-S.meas.length)+'回）');
+};
+function avg7(k){ const v=S.meas.slice(-7).map(m=>m[k]).filter(x=>x!==null&&x!==undefined);
+  return v.length?{a:v.reduce((s,x)=>s+x,0)/v.length,n:v.length}:null; }
+function avgPrev(k){ const v=S.meas.slice(-14,-7).map(m=>m[k]).filter(x=>x!==null&&x!==undefined);
+  return v.length?v.reduce((s,x)=>s+x,0)/v.length:null; }
+const gnum=id=>{const e=document.getElementById(id); if(!e)return null;
+  const v=parseFloat(e.value); return isFinite(v)?v:null;};
+document.getElementById('btnBia').onclick=()=>{
+  const r={d:ds(),w:gnum('tW'),bf:gnum('tBF'),ffm:gnum('tFFM'),mus:gnum('tMUS'),
+           vis:gnum('tVIS'),leg:gnum('tLEG')};
+  if(r.w===null){ toast('体重が要ります','TANITAは体重を基準に差を出します'); return; }
+  if(r.ffm===null && r.bf!==null) r.ffm=+(r.w*(1-r.bf/100)).toFixed(1);
+  if(r.bf===null && r.ffm!==null) r.bf=+((1-r.ffm/r.w)*100).toFixed(1);
+  S.bia=S.bia.filter(x=>x.d!==r.d); S.bia.push(r); S.bia.sort((a,c)=>a.d<c.d?-1:1);
+  save(); renderMeas(); renderPred();
+  toast('⚖️ TANITA を記録','通算 '+S.bia.length+' 回。予測タブで差が出ます');
+};
+document.getElementById('btnIb').onclick=()=>{
+  const r={d:ds(),w:gnum('iW'),smm:gnum('iSMM'),fat:gnum('iFAT'),bf:gnum('iBF'),
+           ra:gnum('iRA'),la:gnum('iLA'),tr:gnum('iTR'),rl:gnum('iRL'),ll:gnum('iLL'),pha:gnum('iPHA')};
+  if(r.w===null && r.smm===null){ toast('入力がありません','体重か骨格筋量のどちらかは入れてください'); return; }
+  S.ib=S.ib.filter(x=>x.d!==r.d); S.ib.push(r); S.ib.sort((a,c)=>a.d<c.d?-1:1);
+  save(); renderMeas(); renderPred();
+  const same=S.bia.find(x=>x.d===r.d);
+  toast('🧪 InBody を記録', same&&r.w&&same.w
+    ? '同じ日のTANITAとの差：体重 '+(r.w-same.w>0?'+':'')+(r.w-same.w).toFixed(1)+' kg'
+    : '通算 '+S.ib.length+' 回');
+};
+function renderMeas(){
+  const last=S.meas[S.meas.length-1];
+  if(last){ [['mUL','ul'],['mUR','ur'],['mTL','tl'],['mTR','tr'],['mCH','ch'],['mWA','wa']]
+    .forEach(([i,k])=>{ const el=document.getElementById(i); if(!el.value&&last[k]!=null) el.placeholder='前回 '+last[k]; }); }
+  let h='<table><tr><th>部位</th><th>7回平均</th><th>前回7回</th><th>差</th></tr>';
+  MF.forEach(([k,nm])=>{
+    const a=avg7(k), p=avgPrev(k);
+    const d=(a&&p!==null)?(a.a-p):null;
+    h+='<tr><td>'+nm+'</td><td>'+(a?'<b>'+a.a.toFixed(1)+'</b>':'—')+'</td>'+
+       '<td>'+(p!==null?p.toFixed(1):'—')+'</td>'+
+       '<td style="color:'+(d===null?'var(--ink3)':(d>0?'var(--up)':(d<0?'var(--blue)':'var(--ink3)')))+'">'+
+       (d===null?'—':(d>0?'+':'')+d.toFixed(1))+'</td></tr>';
+  });
+  h+='</table><div class="note" style="margin-top:10px">記録 '+S.meas.length+' 回。'+
+     (S.meas.length<7?'<b>7回ためると平均で読めます。</b>':'巻き尺の誤差は日ごとに独立なので、7回平均で ±0.2cm 程度まで落ちます。')+
+     '<br>上腕・大腿が<b style="color:#4ade80">増える</b>／腹囲が<b style="color:#60a5fa">減る</b>のが望む向き。</div>';
+  document.getElementById('measAvg').innerHTML=h;
+
+  const b=S.bia[S.bia.length-1];
+  document.getElementById('biaN').innerHTML = b
+    ? '最新 '+b.d+'　体重 <b>'+b.w+'</b> / 体脂肪 <b>'+(b.bf??'—')+'%</b> / 除脂肪 <b>'+(b.ffm??'—')+
+      '</b> / 内臓 Lv'+(b.vis??'—')+'　（通算 '+S.bia.length+' 回）'
+    : 'まだ記録がありません。';
+  const i=S.ib[S.ib.length-1];
+  let ib = i ? '最新 '+i.d+'　体重 <b>'+(i.w??'—')+'</b> / 骨格筋量 <b>'+(i.smm??'—')+
+      '</b> / 体脂肪 <b>'+(i.bf??'—')+'%</b>'+(i.pha?' / PhA <b>'+i.pha+'°</b>':'')+
+      '　（通算 '+S.ib.length+' 回）' : 'まだ記録がありません。';
+  if(i && i.ra!=null && i.la!=null) ib += '<br>腕 右'+i.ra+' / 左'+i.la+
+      '　脚 右'+(i.rl??'—')+' / 左'+(i.ll??'—');
+  const pair = i && S.bia.find(x=>x.d===i.d);
+  if(pair && i.w && pair.w) ib += '<br><b style="color:#ffd27a">同日のTANITAとの差</b>：体重 '+
+      ((i.w-pair.w)>0?'+':'')+(i.w-pair.w).toFixed(1)+' kg'+
+      ((i.bf!=null&&pair.bf!=null)?'／体脂肪率 '+((i.bf-pair.bf)>0?'+':'')+(i.bf-pair.bf).toFixed(1)+' pt':'')+
+      '　→ この差を定数とみなせば、2機種の系列を同じ目盛りに乗せられます。';
+  document.getElementById('ibN').innerHTML=ib;
+}
+
+/* ========== 記録 ========== */
+function renderLog(){
+  const y=calM.getFullYear(), m=calM.getMonth();
+  document.getElementById('calTitle').textContent=y+'年 '+(m+1)+'月';
+  const first=new Date(y,m,1), last=new Date(y,m+1,0);
+  const W=new Set(S.log.map(r=>r.d)), M=new Set(S.meas.map(r=>r.d)), td=ds();
+  let h='';
+  for(let i=0;i<first.getDay();i++) h+='<div style="background:none;border:none"></div>';
+  for(let d=1;d<=last.getDate();d++){
+    const k=ds(new Date(y,m,d));
+    let cls = (W.has(k)&&M.has(k)) ? 'wm' : (W.has(k) ? 'w' : (M.has(k) ? 'm' : ''));
+    if(k===td) cls += ' t';
+    h+='<div class="'+cls.trim()+'">'+d+'</div>';
+  }
+  document.getElementById('cal').innerHTML=h;
+
+  const rec=S.log.slice(-12);
+  const mx=Math.max(1,...rec.map(r=>r.score));
+  document.getElementById('spark').innerHTML=rec.length
+    ? rec.map(r=>'<i style="height:'+Math.max(4,r.score/mx*100)+'%"></i>').join('')
+    : '<div class="note">まだ記録がありません</div>';
+  if(rec.length>=2){
+    const f=rec[0].score, l=rec[rec.length-1].score;
+    document.getElementById('sparkNote').innerHTML=
+      '最初 '+f+' → 最新 <b style="color:#ffd27a">'+l+'</b>　（'+(l>=f?'+':'')+Math.round((l/f-1)*100)+'%）';
+  } else document.getElementById('sparkNote').textContent='';
+
+  let t='<tr><th>種目</th><th>Lv</th><th>いまの課題</th></tr>';
+  EX.forEach(e=>{ const L=lvOf(e.id);
+    t+='<tr><td>'+e.ic+' '+e.nm+'</td><td><b>'+(S.lv[e.id]+1)+'</b>/'+e.L.length+'</td>'+
+       '<td style="font-size:11px;color:var(--ink2)">'+L.n+'</td></tr>'; });
+  document.getElementById('exTable').innerHTML=t;
+
+  const base=S.log.length?S.log[0]:null;
+  const upLv=EX.filter(e=>{ const r=S.log[0]; return r&&r.lv&&S.lv[e.id]>r.lv[e.id]; }).length;
+  const f=base?base.score:0, l=S.log.length?S.log[S.log.length-1].score:0;
+  const pc=f?Math.round((l/f-1)*100):0;
+  document.getElementById('goalBox').innerHTML=
+    '<table><tr><th>目標</th><th>いま</th><th></th></tr>'+
+    '<tr><td>総量 +25%</td><td><b>'+(f?(pc>=0?'+':'')+pc+'%':'—')+'</b></td><td>'+(pc>=25?'✅':'—')+'</td></tr>'+
+    '<tr><td>3種目でLv+1</td><td><b>'+upLv+'</b> 種目</td><td>'+(upLv>=3?'✅':'—')+'</td></tr>'+
+    '<tr><td>トレ 24回（週2×12週）</td><td><b>'+S.log.length+'</b> 回</td><td>'+(S.log.length>=24?'✅':'—')+'</td></tr>'+
+    '</table><div class="note" style="margin-top:10px">'+
+    '<b>目標にしないもの</b>：筋肉量・除脂肪量・体脂肪率。BIAの計算値で、半年の変化は'+
+    'その振れ幅の中に入ってしまうため。記録して傾向を見るだけにする。</div>';
+}
+document.getElementById('calPrev').onclick=()=>{calM.setMonth(calM.getMonth()-1);renderLog();};
+document.getElementById('calNext').onclick=()=>{calM.setMonth(calM.getMonth()+1);renderLog();};
+
+/* ========== 設定 ========== */
+function renderSet(){
+  document.getElementById('set2').className='btn sm'+(S.sets===2?' p':'');
+  document.getElementById('set3').className='btn sm'+(S.sets===3?' p':'');
+  let h='';
+  EX.forEach(e=>{
+    h+='<div class="setrow"><div class="lb" style="width:96px;font-size:12px">'+e.ic+' '+e.nm+'</div>'+
+       '<div class="stp"><button data-e="'+e.id+'" data-m="-1">−</button>'+
+       '<div class="v" style="font-size:15px">Lv.'+(S.lv[e.id]+1)+'</div>'+
+       '<button data-e="'+e.id+'" data-m="1">＋</button></div></div>';
+  });
+  h+='<div class="note" style="margin-top:8px">初回は「10回できて、まだ2〜3回は余裕がある」レベルを選ぶ。'+
+     '迷ったら<b>低いほうから</b>。はしごを2段飛ばししない。</div>';
+  const box=document.getElementById('lvEdit'); box.innerHTML=h;
+  box.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{
+    const e=EX.find(x=>x.id===b.dataset.e);
+    S.lv[e.id]=Math.max(0,Math.min(e.L.length-1,S.lv[e.id]+ +b.dataset.m));
+    save(); renderSet(); renderToday(); renderLog(); }; });
+}
+document.getElementById('set2').onclick=()=>{S.sets=2;save();renderSet();renderToday();};
+document.getElementById('set3').onclick=()=>{S.sets=3;save();renderSet();renderToday();};
+function fillPred(){
+  document.getElementById('pDef').value=S.model.def;
+  document.getElementById('pD0').value=S.base.d;
+  document.getElementById('pW0').value=S.base.w;
+  document.getElementById('pF0').value=S.base.ffm;
+  document.getElementById('pGL').value=S.model.gLo;
+  document.getElementById('pGH').value=S.model.gHi;
+}
+document.getElementById('btnPSave').onclick=()=>{
+  const g=id=>{const v=parseFloat(document.getElementById(id).value);return isFinite(v)?v:null;};
+  const d=document.getElementById('pD0').value.trim();
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){ toast('日付の形式','2026-11-21 の形で入れてください'); return; }
+  S.base.d=d;
+  if(g('pW0')!==null) S.base.w=g('pW0');
+  if(g('pF0')!==null) S.base.ffm=g('pF0');
+  if(S.base.w) S.base.bf=+((1-S.base.ffm/S.base.w)*100).toFixed(1);
+  const a=avg7('wa'); if(a) S.base.wc=+a.a.toFixed(2);   // 起点の腹囲は実測（7点平均）を使う
+  if(g('pDef')!==null) S.model.def=g('pDef');
+  if(g('pGL')!==null) S.model.gLo=g('pGL');
+  if(g('pGH')!==null) S.model.gHi=g('pGH');
+  save(); renderPred(); toast('🎯 予測を引き直しました', S.model.def===0?'赤字ゼロ＝維持で計算します':'1日 '+S.model.def+' kcal の赤字で計算します');
+};
+document.getElementById('btnExp').onclick=()=>{ document.getElementById('ioBox').value=JSON.stringify(S);
+  toast('書き出しました','下の枠の文字をすべて選んでコピーし、メモなどに保存してください'); };
+document.getElementById('btnImp').onclick=()=>{
+  try{ const o=JSON.parse(document.getElementById('ioBox').value);
+    if(!o || typeof o!=='object' || !o.lv) throw 0;
+    S=Object.assign(D0(),o); save(); renderAll(); toast('読み込みました','記録を復元しました');
+  }catch(e){ toast('読み込めません','書き出した文字列をそのまま貼り付けてください'); }
+};
+document.getElementById('btnWipe').onclick=()=>{
+  if(confirm('すべての記録を消します。戻せません。よろしいですか。')){ S=D0(); save(); renderAll(); }
+};
+
+/* ========== 共通 ========== */
+let tt=null;
+function toast(t,s){ const el=document.getElementById('toast');
+  el.innerHTML='<span class="big">'+t+'</span><span class="sm2">'+(s||'')+'</span>';
+  el.classList.add('on'); clearTimeout(tt); tt=setTimeout(()=>el.classList.remove('on'),3400);
+  el.onclick=()=>el.classList.remove('on'); }
+
+document.querySelectorAll('nav button').forEach(b=>{ b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.remove('on'));
+  document.querySelectorAll('section').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); document.getElementById('s-'+b.dataset.t).classList.add('on');
+  if(b.dataset.t==='log') renderLog();
+  if(b.dataset.t==='meas') renderMeas();
+  if(b.dataset.t==='set'){ renderSet(); fillPred(); }
+  if(b.dataset.t==='pred') renderPred();
+  window.scrollTo(0,0); }; });
+
+function renderAll(){ renderToday(); renderMeas(); renderLog(); renderSet(); fillPred(); renderPred(); }
+renderAll();
+window.addEventListener('pageshow',()=>{ buf(); renderToday(); });
+</script>
+</body>
+</html>
