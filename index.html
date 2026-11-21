@@ -177,7 +177,7 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
     <b>自宅 週2回 ＋ ビーモン 週3〜4回。</b>平日夜2回をここに置き換える——<b>足し算にしない。</b><br>
     <b>1〜2セット目は限界の1〜2回手前、最終セットだけ限界まで（0〜1回手前）。</b>
     用量を週4〜6セットに置いたぶん、効かせる側は努力で補う。<br>
-    漸進は <b>回数 → 荷重（2Lペットボトル＝2kg刻み）→ 種目</b> の順。次回の課題は記録の確定で自動で決まる。<br>
+    <b>いまは無負荷で上限を測る段階。</b>全セットで目標に届いたら次回は目標+1回（クエスト Lv+1）。届かなかったところが上限の目安。<br>
     片脚の種目は左右それぞれ。セット間は2分前後。押す種目と引く種目を交互にすると時間が縮む。<br><br>
     <b>kcalの帯は動かさない</b>——30分で約150kcal前後。休養日の帯の幅250の内側に収める。
     予測タブで体重が予測から外れ続けたら、そのとき見直す。
@@ -442,6 +442,12 @@ const EX = [
    ・全セットで上限 → 荷重を1段（最終セットが上限+6以上なら3段）。cap を超えるなら次のレベル
    ・全セットで下限未満 → 荷重を1段下げる。荷重0なら1つ前のレベル（荷重はその上限の半分から）
    ・それ以外 → そのまま */
+function tgt(id){ const q=S.q[id]; return q.base + q.lv - 1; }
+function planQuest(e, vals){
+  const q=S.q[e.id], t=tgt(e.id);
+  if(vals.length && vals.every(x=>x>=t)) return {kind:'up', msg:'クエスト Lv.'+(q.lv+1)+'：目標 '+(t+1)+'回'};
+  return {kind:'stay', msg:'目標 '+t+'回のまま再挑戦（今回の最高 '+Math.max(0,...vals)+'回）'};
+}
 function planNext(e, vals, li, kg){
   const L=e.L[li], st=e.step||0, last=vals[vals.length-1]||0;
   if(vals.length && vals.every(x=>x>=L.hi)){
@@ -470,11 +476,14 @@ const CAL={ wcA:0.856, wcB:21.80, wcSD:0.66, ffmSD:0.61, bfSD:0.54, wSD:0.15, kc
 // 開始点（2026-11-21 再設計）：はしごはすべて本人の実力から起こし直したので、各L1から入る。
 // 荷重は推定。初回の1セット目で限界まで行けば、記録の確定で自動的に合わせ込まれる。
 const LV0=()=>({sq:0,pu:0,hh:0,ro:0,cr:0});
-const LD0=()=>({sq:14,pu:14,hh:10,ro:0,cr:0});
-const D0=()=>({lv:LV0(),load:LD0(),
+const LD0=()=>({sq:0,pu:0,hh:0,ro:0,cr:0});   // 2026-11-21 本人決定：すべて無負荷から
+// クエスト：本人の初期値（2026-11-21）をLv.1とし、全セット達成ごとに目標+1回。届かなかったところが上限の目安
+const Q0=()=>({sq:{lv:1,base:20,best:0,fail:null},pu:{lv:1,base:12,best:0,fail:null},
+               hh:{lv:1,base:10,best:0,fail:null},ro:{lv:1,base:6,best:0,fail:null},cr:{lv:1,base:10,best:0,fail:null}});
+const D0=()=>({lv:LV0(),load:LD0(),q:Q0(),
   sets:2,log:[],meas:[],bia:[],ib:[],bee:[],kenshin:'',today:null,
   base:{d:'2026-11-21',w:72.2,ffm:58.6,bf:18.8,wc:84.21,vis:11},
-  model:{def:433,gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},ver:4});
+  model:{def:433,gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},ver:5});
 let S=load(), calM=new Date();
 
 function load(){
@@ -482,6 +491,9 @@ function load(){
       // ver 4 未満は旧はしご（自重の両脚スクワット等）の段番号なので、新しいはしごの開始点に置き直す。
       // 計測・TANITA・ビーモン・予測の前提はそのまま残す。旧はしごでのトレ記録はスコアとして残す。
       if((o.ver||0)<4){ m.lv=LV0(); m.load=LD0(); m.today=null; m.ver=4; }
+      // ver 5：本人の初期値でクエストを開始。種目は各L1・無負荷
+      if((o.ver||0)<5){ m.lv=LV0(); m.load=LD0(); m.q=Q0(); m.today=null; m.ver=5; }
+      if(!m.q) m.q=Q0();
       return m;} }
   catch(e){}
   return D0();
@@ -599,26 +611,29 @@ function renderToday(){
   wrap.innerHTML='';
   const rec = b.done ? S.log.find(r=>r.d===b.d) : null;
   EX.forEach(e=>{
-    // 記録済みの日は「そのとき挑んだレベル・荷重」で表示し、確定後の課題を「次回」として示す
+    // 記録済みの日は「そのとき挑んだ目標」で表示し、確定後の目標を「次回」として示す
     const li = (rec && rec.lv && e.L[rec.lv[e.id]]) ? rec.lv[e.id] : S.lv[e.id];
     const L = e.L[li], v=b.v[e.id], n=setsOf(e.id);
     const kg = (rec && rec.ld) ? (rec.ld[e.id]||0) : (S.load[e.id]||0);
+    const qq = (rec && rec.q) ? rec.q[e.id] : S.q[e.id];
+    const t = qq.base + qq.lv - 1;
     const any=v.some(x=>x>0);
     let nx=null;
-    if(rec){ if(S.lv[e.id]!==li || (S.load[e.id]||0)!==kg)
-               nx={msg: S.lv[e.id]!==li ? 'Lv.'+(S.lv[e.id]+1)+'「'+e.L[S.lv[e.id]].n+'」'+((S.load[e.id]||0)?'・荷重'+S.load[e.id]+'kg':'')
-                                       : '荷重 '+(S.load[e.id]||0)+'kg', kind: S.lv[e.id]>li||(S.load[e.id]||0)>kg?'up':'down'}; }
-    else if(any){ const p=planNext(e,v,li,kg); if(p.kind!=='stay') nx={msg:p.msg,kind:(p.kind==='down'?'down':'up')}; }
+    if(rec){ nx = (S.q[e.id].lv>qq.lv) ? {kind:'up', msg:'クエスト Lv.'+S.q[e.id].lv+'：目標 '+tgt(e.id)+'回'}
+                                        : {kind:'stay', msg:'目標 '+t+'回で再挑戦'}; }
+    else if(any){ nx=planQuest(e,v); }
+    const f=S.q[e.id].fail;
     const c=document.createElement('div');
     c.className='card q'+(any?' done':'');
     c.innerHTML='<div class="qh"><div class="ic">'+e.ic+'</div>'+
-      '<div><div class="nm">'+e.nm+'</div><div style="font-size:10.5px;color:var(--ink3)">'+e.part+'</div></div>'+
-      '<div class="lv">Lv.'+(li+1)+'</div></div>'+
-      '<div class="qd">'+L.n+(kg>0?'　<span style="color:var(--gold2);font-weight:700">＋'+kg+'kg</span>':'')+'</div>'+
-      '<div class="qt">目標　'+L.lo+'〜'+L.hi+L.u+' × '+n+'セット　最終セットは限界まで</div>'+
-      '<div class="qr">'+v.map(x=>'<span class="pill'+(x>=L.hi?' hit':'')+'">'+(x||'―')+'</span>').join('')+'</div>'+
-      (nx ? '<div class="qt" style="color:'+(nx.kind==='down'?'var(--blue)':'var(--up)')+';margin-top:7px">'+
-            (nx.kind==='down'?'▼ ':'▲ ')+'次回 '+nx.msg+(rec?'':'（記録の確定で反映）')+'</div>' : '')+
+      '<div><div class="nm">'+e.nm+'</div><div style="font-size:10.5px;color:var(--ink3)">'+L.n+'</div></div>'+
+      '<div class="lv">Lv.'+qq.lv+'</div></div>'+
+      '<div class="qd">目標 <b style="color:#ffd27a;font-size:17px">'+t+'</b> 回 × '+n+'セット'+
+        (kg>0?'　<span style="color:var(--gold2);font-weight:700">＋'+kg+'kg</span>':'　無負荷')+'</div>'+
+      (f?'<div class="qt">上限の目安：'+(f.v?f.v.join('・'):f.mx)+'回（'+f.d.slice(5)+'、目標'+f.t+'回に届かず）</div>':'')+
+      '<div class="qr">'+v.map(x=>'<span class="pill'+(x>=t?' hit':'')+'">'+(x||'―')+'</span>').join('')+'</div>'+
+      (nx ? '<div class="qt" style="color:'+(nx.kind==='up'?'var(--up)':'var(--ink2)')+';margin-top:7px">'+
+            (nx.kind==='up'?'▲ 次回 ':'― 次回 ')+nx.msg.replace(/^目標/,'目標')+(rec?'':'（記録の確定で反映）')+'</div>' : '')+
       (any?'<div class="tick">✓</div>':'');
     c.onclick=()=>openSheet(e.id);
     wrap.appendChild(c);
@@ -636,8 +651,8 @@ function openSheet(id){
   const sh=document.getElementById('sheet');
   let h='<div class="sh"><div class="ic">'+e.ic+'</div><div><div class="nm">'+e.nm+'</div>'+
         '<div style="font-size:11px;color:var(--ink3)">'+e.part+'</div></div><div class="x" id="shX">✕</div></div>'+
-        '<div class="lvbox"><div class="t">Lv.'+(S.lv[id]+1)+' / '+e.L.length+'</div><div class="n">'+L.n+'</div>'+
-        '<div class="h">'+L.h+'</div></div>';
+        '<div class="lvbox"><div class="t">クエスト Lv.'+S.q[id].lv+'　目標 '+tgt(id)+'回 × '+n+'セット</div>'+
+        '<div class="n">'+L.n+'</div><div class="h">'+L.h+'</div></div>';
   for(let i=0;i<n;i++){
     h+='<div class="setrow"><div class="lb">'+(i+1)+'セット目</div><div class="stp">'+
        '<button data-m="-1" data-i="'+i+'">−</button>'+
@@ -647,16 +662,12 @@ function openSheet(id){
   if(L.cap>0) h+='<div class="setrow"><div class="lb">荷重</div><div class="stp">'+
      '<button data-lm="-1">−</button><div class="v" id="vkg">'+(S.load[id]||0)+'<small>kg</small></div>'+
      '<button data-lm="1">＋</button></div></div>';
-  h+='<div class="hint">目標は <b style="color:#e8eefc">'+L.lo+'〜'+L.hi+L.u+'</b>'+
-     (L.cap>0?'、荷重は <b style="color:#e8eefc">0〜'+L.cap+'kg</b>（'+e.step+'kg刻み）':'（荷重なしの種目）')+'。<br>'+
-     '<b style="color:#ffd27a">1〜2セット目は限界の1〜2回手前。最終セットは限界まで。</b><br><br>'+
-     '<b>次回の課題は記録の確定で自動で決まります。</b><br>'+
-     '・全セットで '+L.hi+' 回 → 荷重 +'+(e.step||0)+'kg（最終セットが '+(L.hi+6)+' 回以上なら +'+((e.step||0)*3)+'kg）<br>'+
-     '・荷重が上限を超える → 次のレベルへ（荷重0から）<br>'+
-     '・全セットで '+L.lo+' 回未満 → 荷重 −'+(e.step||0)+'kg<br><br>'+
-     '<b>初回だけ</b>：1セット目を限界までやって <b>20回を超えたら、その場で荷重を足して</b>2セット目から。'+
-     '記録には最後に使った荷重を入れる。<br>'+
-     (L.cap>0?'荷重は<b>2Lのペットボトル＝2kg</b>をリュックに入れるのがいちばん正確です（1Lなら1kg）。':'')+
+  h+='<div class="hint">回数の欄には<b>目標の '+tgt(id)+' 回</b>を入れてあります。できた回数に直して記録してください。<br><br>'+
+     '<b>全セットで目標に届いたら、次回は目標 +1回（クエスト Lv+1）。</b><br>'+
+     '届かなかったら、同じ目標で再挑戦。そのときの最高回数を<b>上限の目安</b>として残します。<br>'+
+     (S.q[id].fail?'いまの上限の目安：<b>'+(S.q[id].fail.v?S.q[id].fail.v.join('・'):S.q[id].fail.mx)+'回</b>（'+S.q[id].fail.d+'、目標'+S.q[id].fail.t+'回）<br>':'')+
+     '<br>いまは無負荷で上限を測る段階です。'+
+     (L.cap>0?'上限が分かったら、荷重（2Lペットボトル＝2kg）を足す使い方もできます。':'')+
      '</div>'+
      '<button class="btn p" style="margin-top:14px" id="shOK">記録する</button>'+
      '<div class="ladder"><div style="font-size:11px;color:var(--ink3);margin:14px 0 6px">はしご</div>'+
@@ -665,6 +676,8 @@ function openSheet(id){
      '</div>';
   sh.innerHTML=h;
   const vals=b.v[id].slice(); let kg=S.load[id]||0;
+  if(vals.every(x=>x===0)){ for(let i=0;i<vals.length;i++) vals[i]=tgt(id);   // 目標回数を入れておく
+    for(let i=0;i<vals.length;i++){ const el=document.getElementById('v'+i); if(el) el.innerHTML=vals[i]+'<small>'+L.u+'</small>'; } }
   sh.querySelectorAll('.stp button').forEach(btn=>{
     btn.onclick=()=>{ const i=+btn.dataset.i, m=+btn.dataset.m;
       const step=(L.u==='秒')?5:1;
@@ -678,11 +691,11 @@ function openSheet(id){
   document.getElementById('shX').onclick=closeSheet;
   document.getElementById('shOK').onclick=()=>{
     b.v[id]=vals; S.load[id]=kg;
-    const p=planNext(e,vals,S.lv[id],kg);
+    const p=planQuest(e,vals);
     save(); closeSheet(); renderToday();
     // 5種目そろうと renderToday の中で finishDay が走り、その告知が出る。ここで上書きしない
-    if(p.kind!=='stay' && !buf().done)
-      toast(p.kind==='down'?'▼ 次回は軽くします':'▲ 次回は重くします', e.nm+'：'+p.msg+'<br>5種目そろえて記録を確定すると反映されます');
+    if(!buf().done)
+      toast(p.kind==='up'?'▲ 目標達成':'― 目標まであと少し', e.nm+'：次回 '+p.msg+'<br>5種目そろえて記録を確定すると反映されます');
   };
   document.getElementById('ov').classList.add('on');
 }
@@ -691,18 +704,20 @@ document.getElementById('ov').onclick=ev=>{ if(ev.target.id==='ov') closeSheet()
 
 function finishDay(){
   const b=buf(); const lvSnap=Object.assign({},S.lv), ldSnap=Object.assign({},S.load);
+  const qSnap=JSON.parse(JSON.stringify(S.q));
   const sc=EX.reduce((s,e)=>s+exScore(e.id,b.v[e.id]),0);
   const ups=[];
-  EX.forEach(e=>{ const p=planNext(e,b.v[e.id],S.lv[e.id],S.load[e.id]||0);
-    if(p.kind!=='stay' && p.kind!=='top'){ S.lv[e.id]=p.li; S.load[e.id]=p.kg; ups.push({e:e,p:p}); } });
+  EX.forEach(e=>{ const v=b.v[e.id], q=S.q[e.id], t=tgt(e.id), mx=Math.max(0,...v);
+    q.best=Math.max(q.best||0,mx);
+    if(v.length && v.every(x=>x>=t)){ q.lv++; ups.push({e:e,p:{kind:'up',msg:'クエスト Lv.'+q.lv+'：次回 目標 '+tgt(e.id)+'回'}}); }
+    else { q.fail={d:b.d,t:t,mx:mx,v:v.slice()}; ups.push({e:e,p:{kind:'stay',msg:'目標'+t+'回に届かず（'+v.join('・')+'回）→ 上限の目安。同じ目標で再挑戦'}}); } });
   S.log=S.log.filter(r=>r.d!==b.d);
-  S.log.push({d:b.d,v:JSON.parse(JSON.stringify(b.v)),lv:lvSnap,ld:ldSnap,score:Math.round(sc)});
+  S.log.push({d:b.d,v:JSON.parse(JSON.stringify(b.v)),lv:lvSnap,ld:ldSnap,q:qSnap,score:Math.round(sc)});
   S.log.sort((a,c)=>a.d<c.d?-1:1);
   b.done=true; save();
   if(ups.length){
-    toast('⚔️ 本日クリア　次回の課題を更新',
-      ups.map(x=>(x.p.kind==='down'?'▼ ':'▲ ')+x.e.nm+'：'+x.p.msg).join('<br>')+
-      '<br><br>上げた直後は回数が下限近くまで落ちます。それが正しい。');
+    toast('⚔️ 本日クリア',
+      ups.map(x=>(x.p.kind==='up'?'▲ ':'― ')+x.e.nm+'：'+x.p.msg).join('<br>'));
   }else{
     const r=rankOf(totalScore());
     toast('⚔️ 本日クリア','スコア '+Math.round(sc)+'　累計 '+Math.round(totalScore()).toLocaleString()+'（'+r.nm+'）');
@@ -713,6 +728,7 @@ document.getElementById('btnUndo').onclick=()=>{
   const b=buf(); const rec=S.log.find(r=>r.d===b.d);
   if(rec && rec.lv) S.lv=Object.assign({},rec.lv);
   if(rec && rec.ld) S.load=Object.assign({},rec.ld);
+  if(rec && rec.q) S.q=JSON.parse(JSON.stringify(rec.q));
   S.log=S.log.filter(r=>r.d!==b.d);
   S.today={d:ds(),v:{},done:false}; save(); renderToday(); renderLog();
 };
@@ -980,23 +996,24 @@ function renderSet(){
   document.getElementById('set3').className='btn sm'+(S.sets===3?' p':'');
   let h='';
   EX.forEach(e=>{
-    h+='<div style="margin:10px 0 2px;font-size:12px">'+e.ic+' '+e.nm+'　<span style="color:var(--ink3)">'+e.L[S.lv[e.id]].n+'</span></div>'+
-       '<div class="row"><div class="stp"><button data-e="'+e.id+'" data-m="-1">−</button>'+
-       '<div class="v" style="font-size:15px">Lv.'+(S.lv[e.id]+1)+'</div>'+
-       '<button data-e="'+e.id+'" data-m="1">＋</button></div>'+
-       (e.step>0 ? '<div class="stp"><button data-k="'+e.id+'" data-m="-1">−</button>'+
-       '<div class="v" style="font-size:15px">'+(S.load[e.id]||0)+'<small>kg</small></div>'+
-       '<button data-k="'+e.id+'" data-m="1">＋</button></div>' : '<div></div>')+'</div>';
+    const q=S.q[e.id];
+    h+='<div style="margin:12px 0 3px;font-size:12px">'+e.ic+' '+e.nm+'　<span style="color:var(--ink3)">'+e.L[S.lv[e.id]].n+'・初期値 '+q.base+'回</span></div>'+
+       '<div class="row"><div class="stp"><button data-q="'+e.id+'" data-m="-1">−</button>'+
+       '<div class="v" style="font-size:14px">Lv.'+q.lv+'<small>目標'+tgt(e.id)+'回</small></div>'+
+       '<button data-q="'+e.id+'" data-m="1">＋</button></div>'+
+       '<div class="stp"><button data-e="'+e.id+'" data-m="-1">−</button>'+
+       '<div class="v" style="font-size:14px">種目L'+(S.lv[e.id]+1)+'</div>'+
+       '<button data-e="'+e.id+'" data-m="1">＋</button></div></div>';
   });
   h+='<div class="note" style="margin-top:10px">'+
-     '<b>はしごは本人の実力から作り直しました（2026-11-21）。</b>自重スクワット100回以上・腕立て50回前後という'+
-     '申告からすると、自重の両脚スクワットや通常の腕立ては回数が多すぎて筋に効かない領域です。'+
-     '<b>最初から片脚・デフィシット＋荷重</b>で、6〜15回で限界に届く負荷に置いています。<br>'+
-     '開始の荷重（スクワット14kg・プッシュ14kg・ヒンジ10kg）は<b>推定</b>です。'+
-     '初回に最終セットで限界まで行けば、記録の確定で自動的に合わせ込まれます。</div>';
+     '<b>クエストの初期値（2026-11-21 本人申告）＝Lv.1</b>：ブルガリアン20回／デフィシット・プッシュアップ12回／'+
+     'ヒップヒンジ10回／インバーテッドロウ6回／ロールアウト10回。すべて無負荷。<br>'+
+     '全セットで目標に届くたびに目標+1回。届かなかったところが上限の目安になります。<br>'+
+     '左はクエストのレベル（目標回数）、右は種目（はしごの段）です。種目を変えるとクエストはそのまま続きます。</div>';
   const box=document.getElementById('lvEdit'); box.innerHTML=h;
   box.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{
-    if(b.dataset.e){ const e=EX.find(x=>x.id===b.dataset.e);
+    if(b.dataset.q){ const q=S.q[b.dataset.q]; q.lv=Math.max(1,q.lv+ +b.dataset.m); }
+    else if(b.dataset.e){ const e=EX.find(x=>x.id===b.dataset.e);
       S.lv[e.id]=Math.max(0,Math.min(e.L.length-1,S.lv[e.id]+ +b.dataset.m));
       S.load[e.id]=Math.min(S.load[e.id]||0, e.L[S.lv[e.id]].cap||0); }
     else { const e=EX.find(x=>x.id===b.dataset.k); const cap=e.L[S.lv[e.id]].cap||0;
