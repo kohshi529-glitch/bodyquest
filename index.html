@@ -89,7 +89,7 @@ nav button.on{color:var(--gold2)}
 .lvbox .n{font-size:16px;font-weight:700;margin-top:2px}
 .lvbox .h{font-size:12px;color:var(--ink2);margin-top:6px;line-height:1.55}
 .setrow{display:flex;align-items:center;gap:9px;margin:9px 0}
-.setrow .lb{font-size:12px;color:var(--ink3);width:52px}
+.setrow .lb{font-size:12px;color:var(--ink3);width:64px;white-space:nowrap}
 .stp{display:flex;align-items:center;gap:0;flex:1;
   background:#121a29;border:1px solid var(--line);border-radius:10px;overflow:hidden}
 .stp button{width:48px;height:46px;font-size:22px;font-weight:700;color:var(--ink2);flex:none}
@@ -169,7 +169,7 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
     <div class="card" style="border-color:#2f6b45;background:linear-gradient(180deg,#17301f,#182134);text-align:center">
       <div style="font-size:30px">⚔️</div>
       <div style="font-weight:700;margin-top:4px">本日クリア</div>
-      <div class="note" style="margin-top:5px">スコア <b id="dScore">0</b> ／ 所要の目安 15〜25分</div>
+      <div class="note" style="margin-top:5px">スコア <b id="dScore">0</b> ／ 所要の目安 25〜35分</div>
     </div>
   </div>
   <button class="btn g sm" id="btnUndo" style="margin-top:4px;display:none">今日の記録を取り消す</button>
@@ -177,10 +177,11 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
     <b>自宅 週2回 ＋ ビーモン 週3〜4回。</b>平日夜2回をここに置き換える——<b>足し算にしない。</b><br>
     <b>1〜2セット目は限界の1〜2回手前、最終セットだけ限界まで（0〜1回手前）。</b>
     用量を週4〜6セットに置いたぶん、効かせる側は努力で補う。<br>
-    全セットで上限に届いたら次回レベル+1、<b>リュックは0に戻る</b>。
-    段差が大きすぎるときは設定でレベルを1つ戻し、リュックで0.5〜1kgずつ刻む。<br><br>
-    <b>kcalの帯は動かさない</b>——自宅20分は約88kcalで、休養日の帯の幅250の35%。帯の中に吸収する。
-    発汗控除もしない。<b>ビーモンを減らしても設計上の赤字は変わらない</b>（帯がTDEEに連動しているため）。
+    漸進は <b>回数 → 荷重（2Lペットボトル＝2kg刻み）→ 種目</b> の順。次回の課題は記録の確定で自動で決まる。<br>
+    片脚の種目は左右それぞれ。セット間は2分前後。押す種目と引く種目を交互にすると時間が縮む。<br><br>
+    <b>kcalの帯は動かさない</b>——30分で約150kcal前後。休養日の帯の幅250の内側に収める。
+    予測タブで体重が予測から外れ続けたら、そのとき見直す。
+    <b>ビーモンを減らしても設計上の赤字は変わらない</b>（帯がTDEEに連動しているため）。
   </div>
 </section>
 
@@ -397,63 +398,91 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
 'use strict';
 
 /* ========== 種目とレベルのはしご ========== */
-/* w = レベル係数（相対的な負荷の目安。実測ではない）
-   lo/hi = 回数（または秒）の下限・上限。全セットで hi に届いたらレベルが上がる
-   u = 単位, k = スコア換算係数（秒は 1/3） */
+/* ===== 種目とはしご（2026-11-21 再設計：本人の実力から起こす） =====
+   本人の申告：自重スクワットは100回以上、通常の腕立ては50回前後が限界。
+   → 自重の両脚・通常の腕立ては「回数が多すぎて筋に効かない」領域。
+     6〜15回で限界に届く負荷まで、最初から片側化＋荷重で引き上げる。
+   漸進は3段：回数 → 荷重（2Lペットボトル＝2kg刻み）→ 種目（レベル）。
+   w   = レベル係数（相対的な負荷の目安。実測ではない）
+   lo/hi = 回数の下限・上限。全セットで hi に届いたら荷重を1段上げる
+   cap = そのレベルで載せる荷重の上限 kg（0 = 荷重なしの種目）。cap を超えたら次のレベルへ
+   u = 単位, k = スコア換算係数 */
 const EX = [
- {id:'sq', nm:'スクワット', ic:'🦵', part:'下半身を押す',
-  L:[{n:'椅子スクワット',h:'椅子に腰を下ろして立つ',w:0.5,lo:10,hi:15,u:'回',k:1},
-     {n:'自重スクワット',h:'腿が床と平行になるまで',w:0.8,lo:10,hi:15,u:'回',k:1},
-     {n:'テンポスクワット',h:'下ろし3秒・いちばん下で1秒止める',w:1.0,lo:8,hi:12,u:'回',k:1},
-     {n:'スプリットスクワット',h:'足を前後に開いて片脚ずつ。回数は片脚あたり',w:1.4,lo:8,hi:12,u:'回',k:1},
-     {n:'ブルガリアン',h:'後ろ足を椅子に乗せる。片脚あたり',w:1.8,lo:6,hi:10,u:'回',k:1},
-     {n:'片脚スクワット（補助）',h:'何かにつかまって。片脚あたり',w:2.3,lo:5,hi:8,u:'回',k:1}]},
+ {id:'sq', nm:'スクワット', ic:'🦵', part:'下半身を押す（片脚）', step:2, start:14,
+  L:[{n:'ブルガリアン・スプリットスクワット',h:'後ろ足の甲を椅子に乗せ、前脚の膝を深く曲げる。下ろし2秒・切り返しで止まらない。リュックを背負って荷重。回数は片脚あたり',w:1.2,lo:8,hi:15,u:'回',k:1,cap:20},
+     {n:'デフィシット・ブルガリアン',h:'前足を厚い本（5〜10cm）に乗せて、さらに深く沈む。伸びた位置での負荷が増える。片脚あたり',w:1.4,lo:8,hi:15,u:'回',k:1,cap:20},
+     {n:'ピストルスクワット（箱）',h:'片脚で椅子・箱に腰を下ろして立つ。反対の脚は前に伸ばす。箱を低くしていく。片脚あたり',w:1.6,lo:5,hi:10,u:'回',k:1,cap:10},
+     {n:'ピストルスクワット',h:'片脚で床近くまで沈んで立つ。片脚あたり',w:2.0,lo:5,hi:10,u:'回',k:1,cap:10}]},
 
- {id:'pu', nm:'プッシュアップ', ic:'💪', part:'上半身を押す',
-  L:[{n:'壁プッシュアップ',h:'壁に手をついて',w:0.3,lo:10,hi:15,u:'回',k:1},
-     {n:'台に手をついて',h:'台が低いほどきつい。高さで細かく調整できる',w:0.5,lo:10,hi:15,u:'回',k:1},
-     {n:'膝つきプッシュアップ',h:'膝を床につけて',w:0.7,lo:8,hi:12,u:'回',k:1},
-     {n:'通常プッシュアップ',h:'胸が床の手前まで',w:1.0,lo:8,hi:12,u:'回',k:1},
-     {n:'テンポプッシュアップ',h:'下ろし3秒・胸が床の手前で1秒止める',w:1.25,lo:6,hi:10,u:'回',k:1},
-     {n:'足上げプッシュアップ',h:'足を椅子に乗せる',w:1.4,lo:6,hi:10,u:'回',k:1},
-     {n:'アーチャー',h:'左右に体重を寄せる。回数は片側あたり',w:1.8,lo:5,hi:8,u:'回',k:1}]},
+ {id:'pu', nm:'プッシュアップ', ic:'💪', part:'上半身を押す', step:2, start:14,
+  L:[{n:'デフィシット・プッシュアップ',h:'両手を厚い本か台に乗せ、胸が手より下に入るまで沈む。リュックを背負って荷重',w:1.1,lo:8,hi:15,u:'回',k:1,cap:16},
+     {n:'アーチャー・プッシュアップ',h:'手を大きく開き、片側の腕に体重を寄せて下ろす。反対の腕は伸ばしたまま補助だけ。回数は片側あたり',w:1.6,lo:6,hi:12,u:'回',k:1,cap:10},
+     {n:'プセウドプランシェ・プッシュアップ',h:'手を腰の横（指先は外か後ろ）に置き、肩を手より前に出したまま行う。肩の前側に強く効く',w:1.8,lo:6,hi:12,u:'回',k:1,cap:10},
+     {n:'片手プッシュアップ（傾斜）',h:'片手を机・台に置いた傾斜から。足は大きく開く。台を低くしていく。片側あたり',w:2.0,lo:5,hi:10,u:'回',k:1,cap:0},
+     {n:'片手プッシュアップ',h:'床で片手。足は大きく開く。片側あたり',w:2.5,lo:3,hi:8,u:'回',k:1,cap:0}]},
 
- {id:'hh', nm:'ヒップヒンジ', ic:'🏋️', part:'体の後ろ側',
-  L:[{n:'グッドモーニング',h:'手を頭の後ろ。背中はまっすぐのまま股関節から折る',w:0.5,lo:10,hi:15,u:'回',k:1},
-     {n:'片脚デッドリフト',h:'自重。反対の脚を後ろに伸ばす。片脚あたり',w:0.9,lo:8,hi:12,u:'回',k:1},
-     {n:'ヒップスラスト',h:'肩甲骨を椅子に乗せ、腰を持ち上げる',w:1.2,lo:10,hi:15,u:'回',k:1},
-     {n:'片脚ヒップスラスト',h:'片脚あたり',w:1.8,lo:6,hi:10,u:'回',k:1},
-     {n:'ノルディックカール',h:'足を固定して前に倒れ、手で受ける。L4が余裕になるまで手を出さない',w:2.5,lo:3,hi:6,u:'回',k:1}]},
+ {id:'hh', nm:'ヒップヒンジ', ic:'🏋️', part:'体の後ろ側（臀筋・ハム）', step:2, start:10,
+  L:[{n:'片脚ヒップスラスト',h:'肩甲骨をソファか椅子の縁に乗せ、片脚で腰を持ち上げる。上で1秒止める。リュックを腰骨の上に乗せて荷重。片脚あたり',w:1.0,lo:8,hi:15,u:'回',k:1,cap:20},
+     {n:'片脚ルーマニアンデッドリフト',h:'リュックを片手に持ち、背中をまっすぐのまま股関節から前に倒す。軸脚の膝はわずかに曲げたまま。片脚あたり',w:1.2,lo:8,hi:15,u:'回',k:1,cap:20},
+     {n:'ノルディック・ハムストリングカール',h:'膝をクッションに、かかとをソファの下などに固定し、ゆっくり前に倒れて手で受ける。戻りは手で押してよい',w:2.5,lo:3,hi:8,u:'回',k:1,cap:0}]},
 
- {id:'ro', nm:'ロウ', ic:'🪢', part:'上半身を引く',
-  L:[{n:'タオル・立て気味',h:'ドアの蝶番側にタオルを挟み、体を立て気味にして引く',w:0.5,lo:10,hi:15,u:'回',k:1},
-     {n:'タオル・倒す／机・膝曲げ',h:'体を倒すほどきつい。机の下なら膝を曲げて',w:0.8,lo:8,hi:12,u:'回',k:1},
-     {n:'机の下・脚を伸ばして',h:'天板の縁を握って体を引き上げる。机の強度を必ず確かめる',w:1.1,lo:8,hi:12,u:'回',k:1},
-     {n:'片手ずつ／リュックを重く',h:'本を詰めたリュックで前傾して引く。重さは冊数で調整',w:1.6,lo:6,hi:10,u:'回',k:1}]},
+ {id:'ro', nm:'ロウ', ic:'🪢', part:'上半身を引く', step:1, start:0,
+  L:[{n:'インバーテッドロウ（脚伸ばし）',h:'頑丈な机の下に仰向けで入り、天板の縁を握って胸を引き上げる。体は一直線。★机の強度を必ず確かめる。荷重はリュックを胸側に抱える',w:0.9,lo:8,hi:15,u:'回',k:1,cap:10},
+     {n:'インバーテッドロウ（足上げ）',h:'かかとを椅子に乗せ、体を水平に近づける',w:1.1,lo:8,hi:15,u:'回',k:1,cap:10},
+     {n:'アーチャー・ロウ',h:'片側の腕で主に引き、反対の腕は伸ばして補助だけ。回数は片側あたり',w:1.5,lo:6,hi:12,u:'回',k:1,cap:6},
+     {n:'片腕インバーテッドロウ',h:'片腕だけで引く。体がねじれないように。片側あたり',w:2.0,lo:5,hi:10,u:'回',k:1,cap:0}]},
 
- {id:'cr', nm:'体幹', ic:'🧱', part:'姿勢と腰の保護',
-  L:[{n:'デッドバグ',h:'仰向けで対角の手足をゆっくり伸ばす',w:0.6,lo:8,hi:12,u:'回',k:1},
-     {n:'プランク',h:'肘とつま先で一直線',w:0.8,lo:30,hi:60,u:'秒',k:1/3},
-     {n:'片脚プランク',h:'プランクで片脚を上げる。秒数は片脚あたり',w:1.1,lo:20,hi:40,u:'秒',k:1/3},
-     {n:'サイドプランク',h:'左右それぞれ。秒数は片側あたり',w:1.3,lo:20,hi:45,u:'秒',k:1/3},
-     {n:'ロールアウト',h:'立て膝からタオルを床で滑らせる',w:1.8,lo:5,hi:10,u:'回',k:1}]}
+ {id:'cr', nm:'体幹', ic:'🧱', part:'体幹（姿勢と腰の保護）', step:0, start:0,
+  L:[{n:'ロールアウト（膝つき）',h:'膝をつき、タオルか雑巾の上に手を置いて床を前に滑らせる。腰が反る手前で戻る',w:1.0,lo:8,hi:15,u:'回',k:1,cap:0},
+     {n:'ロールアウト（遠く・3秒静止）',h:'さらに遠くまで滑らせ、いちばん遠い位置で3秒止めて戻る',w:1.3,lo:6,hi:12,u:'回',k:1,cap:0},
+     {n:'ドラゴンフラッグ（ネガティブ）',h:'仰向けで頭の上のソファの脚などを握り、体を一直線のまま上げて、ゆっくり下ろす。下ろしだけで1回',w:2.0,lo:3,hi:8,u:'回',k:1,cap:0}]}
 ];
+
+/* 次回の課題を決める（記録を確定したときに使う）
+   ・全セットで上限 → 荷重を1段（最終セットが上限+6以上なら3段）。cap を超えるなら次のレベル
+   ・全セットで下限未満 → 荷重を1段下げる。荷重0なら1つ前のレベル（荷重はその上限の半分から）
+   ・それ以外 → そのまま */
+function planNext(e, vals, li, kg){
+  const L=e.L[li], st=e.step||0, last=vals[vals.length-1]||0;
+  if(vals.length && vals.every(x=>x>=L.hi)){
+    const inc = (last>=L.hi+6) ? 3 : 1;
+    const nk = kg + inc*st;
+    if(L.cap>0 && st>0 && nk<=L.cap) return {li:li, kg:nk, kind:'load', msg:'荷重 +'+(inc*st)+'kg → '+nk+'kg'};
+    if(li<e.L.length-1){
+      return {li:li+1, kg:0, kind:'level', msg:'Lv.'+(li+2)+'「'+e.L[li+1].n+'」へ'+(e.L[li+1].cap>0?'（荷重0から）':'')};
+    }
+    return {li:li, kg:kg, kind:'top', msg:'最上段。回数を伸ばす'};
+  }
+  if(vals.length && vals.every(x=>x>0 && x<L.lo)){
+    if(kg>0 && st>0){ const nk=Math.max(0,kg-st); return {li:li, kg:nk, kind:'down', msg:'荷重 −'+st+'kg → '+nk+'kg'}; }
+    if(li>0){ const pc=e.L[li-1].cap, st2=e.step||0;
+      const nk = st2>0 ? Math.round(pc/2/st2)*st2 : 0;
+      return {li:li-1, kg:nk, kind:'down', msg:'Lv.'+li+'「'+e.L[li-1].n+'」に戻す（荷重'+nk+'kg）'}; }
+  }
+  return {li:li, kg:kg, kind:'stay', msg:''};
+}
 
 const RANKS=[[0,'新兵'],[600,'訓練兵'],[1800,'斥候'],[4000,'兵長'],[7500,'剣士'],
              [13000,'戦士'],[21000,'猛者'],[32000,'古豪'],[48000,'豪傑'],[70000,'不屈'],[100000,'鉄人']];
 
 const KEY='kintore_state';
 const CAL={ wcA:0.856, wcB:21.80, wcSD:0.66, ffmSD:0.61, bfSD:0.54, wSD:0.15, kcalPerKg:7200 };
-// 開始レベルは「8〜12回がはっきりきつい段」に置く。
-// ビーモンの45分サーキットを週5〜6回・17か月やっているので、下位レベルは空振りする。
-const D0=()=>({lv:{sq:3,pu:3,hh:2,ro:1,cr:1},load:{sq:0,pu:0,hh:0,ro:0,cr:0},
+// 開始点（2026-11-21 再設計）：はしごはすべて本人の実力から起こし直したので、各L1から入る。
+// 荷重は推定。初回の1セット目で限界まで行けば、記録の確定で自動的に合わせ込まれる。
+const LV0=()=>({sq:0,pu:0,hh:0,ro:0,cr:0});
+const LD0=()=>({sq:14,pu:14,hh:10,ro:0,cr:0});
+const D0=()=>({lv:LV0(),load:LD0(),
   sets:2,log:[],meas:[],bia:[],ib:[],bee:[],kenshin:'',today:null,
   base:{d:'2026-11-21',w:72.2,ffm:58.6,bf:18.8,wc:84.21,vis:11},
-  model:{def:433,gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},ver:3});
+  model:{def:433,gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},ver:4});
 let S=load(), calM=new Date();
 
 function load(){
-  try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); return Object.assign(D0(),o);} }
+  try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); const m=Object.assign(D0(),o);
+      // ver 4 未満は旧はしご（自重の両脚スクワット等）の段番号なので、新しいはしごの開始点に置き直す。
+      // 計測・TANITA・ビーモン・予測の前提はそのまま残す。旧はしごでのトレ記録はスコアとして残す。
+      if((o.ver||0)<4){ m.lv=LV0(); m.load=LD0(); m.today=null; m.ver=4; }
+      return m;} }
   catch(e){}
   return D0();
 }
@@ -474,9 +503,10 @@ function buf(){
 }
 // リュックの荷重は「そのレベル内の微調整」。20kgでおよそ2倍という粗い換算。
 // 係数そのものに実測の裏づけはない（同じ係数で測り続けることだけに意味がある）。
-function loadMul(kg){ return 1 + (kg||0)/20; }
+function loadMul(kg){ return 1 + (kg||0)/40; }   // 20kgで1.5倍。粗い換算（同じ式で測り続けることにだけ意味がある）
 function exScore(id,arr,lvIdx,kg){
   const L=EX.find(x=>x.id===id).L[lvIdx===undefined?S.lv[id]:lvIdx];
+  if(!L) return 0;   // 旧はしごの記録（段番号が合わない）は再計算しない。保存済みの score を使う
   const m=loadMul(kg===undefined?S.load[id]:kg);
   return arr.reduce((s,v)=>s+v*L.w*L.k*m,0);
 }
@@ -569,25 +599,26 @@ function renderToday(){
   wrap.innerHTML='';
   const rec = b.done ? S.log.find(r=>r.d===b.d) : null;
   EX.forEach(e=>{
-    // 記録済みの日は「そのとき挑んだレベル」で表示する（確定でレベルが上がるため）
-    const li = (rec && rec.lv) ? rec.lv[e.id] : S.lv[e.id];
+    // 記録済みの日は「そのとき挑んだレベル・荷重」で表示し、確定後の課題を「次回」として示す
+    const li = (rec && rec.lv && e.L[rec.lv[e.id]]) ? rec.lv[e.id] : S.lv[e.id];
     const L = e.L[li], v=b.v[e.id], n=setsOf(e.id);
     const kg = (rec && rec.ld) ? (rec.ld[e.id]||0) : (S.load[e.id]||0);
-    const all=v.length>0 && v.every(x=>x>=L.hi), any=v.some(x=>x>0);
-    const nextUp = rec ? (S.lv[e.id]>li) : all;
+    const any=v.some(x=>x>0);
+    let nx=null;
+    if(rec){ if(S.lv[e.id]!==li || (S.load[e.id]||0)!==kg)
+               nx={msg: S.lv[e.id]!==li ? 'Lv.'+(S.lv[e.id]+1)+'「'+e.L[S.lv[e.id]].n+'」'+((S.load[e.id]||0)?'・荷重'+S.load[e.id]+'kg':'')
+                                       : '荷重 '+(S.load[e.id]||0)+'kg', kind: S.lv[e.id]>li||(S.load[e.id]||0)>kg?'up':'down'}; }
+    else if(any){ const p=planNext(e,v,li,kg); if(p.kind!=='stay') nx={msg:p.msg,kind:(p.kind==='down'?'down':'up')}; }
     const c=document.createElement('div');
     c.className='card q'+(any?' done':'');
     c.innerHTML='<div class="qh"><div class="ic">'+e.ic+'</div>'+
       '<div><div class="nm">'+e.nm+'</div><div style="font-size:10.5px;color:var(--ink3)">'+e.part+'</div></div>'+
       '<div class="lv">Lv.'+(li+1)+'</div></div>'+
-      '<div class="qd">'+L.n+'</div>'+
-      '<div class="qt">目標　'+L.lo+'〜'+L.hi+L.u+' × '+n+'セット'+
-        (kg>0?'　<span style="color:var(--gold2)">＋リュック '+kg+'kg</span>':'')+'</div>'+
+      '<div class="qd">'+L.n+(kg>0?'　<span style="color:var(--gold2);font-weight:700">＋'+kg+'kg</span>':'')+'</div>'+
+      '<div class="qt">目標　'+L.lo+'〜'+L.hi+L.u+' × '+n+'セット　最終セットは限界まで</div>'+
       '<div class="qr">'+v.map(x=>'<span class="pill'+(x>=L.hi?' hit':'')+'">'+(x||'―')+'</span>').join('')+'</div>'+
-      (nextUp ? (function(){ // 確定前は S.lv がまだ上がっていないので +1 して次の段を示す
-          const ni = rec ? S.lv[e.id] : Math.min(e.L.length-1, S.lv[e.id]+1);
-          return '<div class="qt" style="color:var(--up);margin-top:7px">▲ 次回から Lv.'+(ni+1)+
-                 '「'+e.L[ni].n+'」'+(rec?'（リュックは0に戻ります）':'（記録を確定すると上がります）')+'</div>'; })() : '')+
+      (nx ? '<div class="qt" style="color:'+(nx.kind==='down'?'var(--blue)':'var(--up)')+';margin-top:7px">'+
+            (nx.kind==='down'?'▼ ':'▲ ')+'次回 '+nx.msg+(rec?'':'（記録の確定で反映）')+'</div>' : '')+
       (any?'<div class="tick">✓</div>':'');
     c.onclick=()=>openSheet(e.id);
     wrap.appendChild(c);
@@ -613,15 +644,20 @@ function openSheet(id){
        '<div class="v" id="v'+i+'">'+b.v[id][i]+'<small>'+L.u+'</small></div>'+
        '<button data-m="1" data-i="'+i+'">＋</button></div></div>';
   }
-  h+='<div class="setrow"><div class="lb">リュック</div><div class="stp">'+
+  if(L.cap>0) h+='<div class="setrow"><div class="lb">荷重</div><div class="stp">'+
      '<button data-lm="-1">−</button><div class="v" id="vkg">'+(S.load[id]||0)+'<small>kg</small></div>'+
      '<button data-lm="1">＋</button></div></div>';
-  h+='<div class="hint">目標は <b style="color:#e8eefc">'+L.lo+'〜'+L.hi+L.u+'</b>。<br>'+
-     '<b style="color:#ffd27a">1〜2セット目は限界の1〜2回手前。最終セットだけ限界まで（0〜1回手前）。</b><br>'+
-     '用量を週4〜6セットに置いたぶん、<b>効かせる側は努力で補う</b>設計です。<br><br>'+
-     '全セットで '+L.hi+L.u+' に届いたら、次回はレベルが1つ上がり、<b>リュックは0に戻ります</b>。<br>'+
-     '次の段が大きすぎてこなせないときは、設定でレベルを1つ戻し、'+
-     '<b>リュックを0.5〜1kgずつ足して刻んで</b>ください。</div>'+
+  h+='<div class="hint">目標は <b style="color:#e8eefc">'+L.lo+'〜'+L.hi+L.u+'</b>'+
+     (L.cap>0?'、荷重は <b style="color:#e8eefc">0〜'+L.cap+'kg</b>（'+e.step+'kg刻み）':'（荷重なしの種目）')+'。<br>'+
+     '<b style="color:#ffd27a">1〜2セット目は限界の1〜2回手前。最終セットは限界まで。</b><br><br>'+
+     '<b>次回の課題は記録の確定で自動で決まります。</b><br>'+
+     '・全セットで '+L.hi+' 回 → 荷重 +'+(e.step||0)+'kg（最終セットが '+(L.hi+6)+' 回以上なら +'+((e.step||0)*3)+'kg）<br>'+
+     '・荷重が上限を超える → 次のレベルへ（荷重0から）<br>'+
+     '・全セットで '+L.lo+' 回未満 → 荷重 −'+(e.step||0)+'kg<br><br>'+
+     '<b>初回だけ</b>：1セット目を限界までやって <b>20回を超えたら、その場で荷重を足して</b>2セット目から。'+
+     '記録には最後に使った荷重を入れる。<br>'+
+     (L.cap>0?'荷重は<b>2Lのペットボトル＝2kg</b>をリュックに入れるのがいちばん正確です（1Lなら1kg）。':'')+
+     '</div>'+
      '<button class="btn p" style="margin-top:14px" id="shOK">記録する</button>'+
      '<div class="ladder"><div style="font-size:11px;color:var(--ink3);margin:14px 0 6px">はしご</div>'+
       e.L.map((l,i)=>'<div class="r '+(i===S.lv[id]?'cur':(i<S.lv[id]?'past':''))+'">'+
@@ -636,18 +672,17 @@ function openSheet(id){
       document.getElementById('v'+i).innerHTML=vals[i]+'<small>'+L.u+'</small>'; };
   });
   sh.querySelectorAll('[data-lm]').forEach(btn=>{ btn.onclick=()=>{
-    kg=Math.max(0,Math.round((kg+ (+btn.dataset.lm)*0.5)*2)/2);
+    const st=e.step||1;
+    kg=Math.max(0,Math.min(L.cap||0, kg+(+btn.dataset.lm)*st));
     document.getElementById('vkg').innerHTML=kg+'<small>kg</small>'; }; });
   document.getElementById('shX').onclick=closeSheet;
   document.getElementById('shOK').onclick=()=>{
     b.v[id]=vals; S.load[id]=kg;
-    const lvWas=S.lv[id];
-    const up = vals.length>0 && vals.every(x=>x>=L.hi) && lvWas<e.L.length-1;
+    const p=planNext(e,vals,S.lv[id],kg);
     save(); closeSheet(); renderToday();
-    // 5種目そろうと renderToday の中で finishDay が走り、その中でレベルが上がる。
-    // そのときは finishDay 側の告知を残す（ここで上書きしない）。
-    if(up && !buf().done)
-      toast('\u25b2 レベルアップ間近','全セットで上限に届きました。<br>5種目そろえて記録を確定すると Lv.'+(lvWas+2)+'「'+e.L[lvWas+1].n+'」へ');
+    // 5種目そろうと renderToday の中で finishDay が走り、その告知が出る。ここで上書きしない
+    if(p.kind!=='stay' && !buf().done)
+      toast(p.kind==='down'?'▼ 次回は軽くします':'▲ 次回は重くします', e.nm+'：'+p.msg+'<br>5種目そろえて記録を確定すると反映されます');
   };
   document.getElementById('ov').classList.add('on');
 }
@@ -658,17 +693,16 @@ function finishDay(){
   const b=buf(); const lvSnap=Object.assign({},S.lv), ldSnap=Object.assign({},S.load);
   const sc=EX.reduce((s,e)=>s+exScore(e.id,b.v[e.id]),0);
   const ups=[];
-  EX.forEach(e=>{ const L=lvOf(e.id);
-    if(b.v[e.id].every(x=>x>=L.hi) && S.lv[e.id]<e.L.length-1){
-      S.lv[e.id]++; S.load[e.id]=0; ups.push(e); } });   // 段が上がったら荷重はいったん0
+  EX.forEach(e=>{ const p=planNext(e,b.v[e.id],S.lv[e.id],S.load[e.id]||0);
+    if(p.kind!=='stay' && p.kind!=='top'){ S.lv[e.id]=p.li; S.load[e.id]=p.kg; ups.push({e:e,p:p}); } });
   S.log=S.log.filter(r=>r.d!==b.d);
   S.log.push({d:b.d,v:JSON.parse(JSON.stringify(b.v)),lv:lvSnap,ld:ldSnap,score:Math.round(sc)});
   S.log.sort((a,c)=>a.d<c.d?-1:1);
   b.done=true; save();
   if(ups.length){
-    toast('▲ レベルアップ ×'+ups.length,
-      ups.map(e=>e.nm+' → Lv.'+(S.lv[e.id]+1)+'「'+e.L[S.lv[e.id]].n+'」').join('<br>')+
-      '<br><br>上げた直後は回数が下限まで落ちます。それが正しい。');
+    toast('⚔️ 本日クリア　次回の課題を更新',
+      ups.map(x=>(x.p.kind==='down'?'▼ ':'▲ ')+x.e.nm+'：'+x.p.msg).join('<br>')+
+      '<br><br>上げた直後は回数が下限近くまで落ちます。それが正しい。');
   }else{
     const r=rankOf(totalScore());
     toast('⚔️ 本日クリア','スコア '+Math.round(sc)+'　累計 '+Math.round(totalScore()).toLocaleString()+'（'+r.nm+'）');
@@ -678,6 +712,7 @@ function finishDay(){
 document.getElementById('btnUndo').onclick=()=>{
   const b=buf(); const rec=S.log.find(r=>r.d===b.d);
   if(rec && rec.lv) S.lv=Object.assign({},rec.lv);
+  if(rec && rec.ld) S.load=Object.assign({},rec.ld);
   S.log=S.log.filter(r=>r.d!==b.d);
   S.today={d:ds(),v:{},done:false}; save(); renderToday(); renderLog();
 };
@@ -945,21 +980,27 @@ function renderSet(){
   document.getElementById('set3').className='btn sm'+(S.sets===3?' p':'');
   let h='';
   EX.forEach(e=>{
-    h+='<div class="setrow"><div class="lb" style="width:96px;font-size:12px">'+e.ic+' '+e.nm+'</div>'+
-       '<div class="stp"><button data-e="'+e.id+'" data-m="-1">−</button>'+
+    h+='<div style="margin:10px 0 2px;font-size:12px">'+e.ic+' '+e.nm+'　<span style="color:var(--ink3)">'+e.L[S.lv[e.id]].n+'</span></div>'+
+       '<div class="row"><div class="stp"><button data-e="'+e.id+'" data-m="-1">−</button>'+
        '<div class="v" style="font-size:15px">Lv.'+(S.lv[e.id]+1)+'</div>'+
-       '<button data-e="'+e.id+'" data-m="1">＋</button></div></div>';
+       '<button data-e="'+e.id+'" data-m="1">＋</button></div>'+
+       (e.step>0 ? '<div class="stp"><button data-k="'+e.id+'" data-m="-1">−</button>'+
+       '<div class="v" style="font-size:15px">'+(S.load[e.id]||0)+'<small>kg</small></div>'+
+       '<button data-k="'+e.id+'" data-m="1">＋</button></div>' : '<div></div>')+'</div>';
   });
-  h+='<div class="note" style="margin-top:8px">'+
-     '初回は<b>「8〜12回がはっきりきつい」段</b>から入る。<br>'+
-     '<b>※「迷ったら低いほうから」は撤回しました。</b>ビーモンの45分サーキットを週5〜6回・17か月'+
-     'やっているので、下位レベルは空振りします。既定値は スクワットL4／プッシュL4／ヒンジL3／'+
-     'ロウL2／体幹L2 に上げてあります。<br>'+
-     'やってみて全セット上限まで楽に届いたら、<b>次回を待たずその場で1段上げる</b>。</div>';
+  h+='<div class="note" style="margin-top:10px">'+
+     '<b>はしごは本人の実力から作り直しました（2026-11-21）。</b>自重スクワット100回以上・腕立て50回前後という'+
+     '申告からすると、自重の両脚スクワットや通常の腕立ては回数が多すぎて筋に効かない領域です。'+
+     '<b>最初から片脚・デフィシット＋荷重</b>で、6〜15回で限界に届く負荷に置いています。<br>'+
+     '開始の荷重（スクワット14kg・プッシュ14kg・ヒンジ10kg）は<b>推定</b>です。'+
+     '初回に最終セットで限界まで行けば、記録の確定で自動的に合わせ込まれます。</div>';
   const box=document.getElementById('lvEdit'); box.innerHTML=h;
   box.querySelectorAll('button').forEach(b=>{ b.onclick=()=>{
-    const e=EX.find(x=>x.id===b.dataset.e);
-    S.lv[e.id]=Math.max(0,Math.min(e.L.length-1,S.lv[e.id]+ +b.dataset.m));
+    if(b.dataset.e){ const e=EX.find(x=>x.id===b.dataset.e);
+      S.lv[e.id]=Math.max(0,Math.min(e.L.length-1,S.lv[e.id]+ +b.dataset.m));
+      S.load[e.id]=Math.min(S.load[e.id]||0, e.L[S.lv[e.id]].cap||0); }
+    else { const e=EX.find(x=>x.id===b.dataset.k); const cap=e.L[S.lv[e.id]].cap||0;
+      S.load[e.id]=Math.max(0,Math.min(cap,(S.load[e.id]||0)+ (+b.dataset.m)*e.step)); }
     save(); renderSet(); renderToday(); renderLog(); }; });
 }
 document.getElementById('set2').onclick=()=>{S.sets=2;save();renderSet();renderToday();};
