@@ -116,7 +116,7 @@ th,td{padding:7px 4px;border-bottom:1px solid #1d2638;text-align:right}
 th{color:var(--ink3);font-size:10.5px;font-weight:700;text-align:right}
 th:first-child,td:first-child{text-align:left}
 td b{color:var(--gold2)}
-input[type=number],input[type=text],textarea{width:100%;background:#121a29;color:var(--ink);
+input[type=number],input[type=text],input[type=date],textarea{width:100%;background:#121a29;color:var(--ink);
   border:1px solid var(--line);border-radius:9px;padding:10px;font:inherit;font-size:16px}
 textarea{font-size:12px;font-family:ui-monospace,monospace;min-height:120px}
 label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
@@ -194,6 +194,7 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
       <b>トレ直後は測らない</b>（パンプで1cm以上ふくらむ）。
     </div>
     <div class="mg">
+<div style="grid-column:1/-1"><label>測った日（今日以外なら直す）</label><input type="date" id="mD"></div>
       <div><label>上腕 左（力こぶ）cm</label><input type="number" step="0.5" inputmode="decimal" id="mUL"></div>
       <div><label>上腕 右（力こぶ）cm</label><input type="number" step="0.5" inputmode="decimal" id="mUR"></div>
       <div><label>大腿 左（座位） cm</label><input type="number" step="0.5" inputmode="decimal" id="mTL"></div>
@@ -210,8 +211,10 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
 
   <h2>TANITA（ジムの体組成計）</h2>
   <div class="card">
-    <div class="note" style="margin-bottom:10px">条件統一＝<b>トレ直前・無摂取</b>のときだけ入れる。トレ直後は入れない。</div>
+    <div class="note" style="margin-bottom:10px">ジムで測った日に、伝票の数字を入れる。条件統一＝<b>トレ直前・無摂取</b>のときだけ。トレ直後と家庭用の体重計は入れない。<br>
+      入れた記録は予測タブの「予測↔実測」「除脂肪の傾き」「目標の判定」に使われます（傾きは3回から）。</div>
     <div class="mg">
+<div style="grid-column:1/-1"><label>測った日（今日以外なら直す）</label><input type="date" id="tD"></div>
       <div><label>体重 kg</label><input type="number" step="0.1" inputmode="decimal" id="tW"></div>
       <div><label>体脂肪率 %</label><input type="number" step="0.1" inputmode="decimal" id="tBF"></div>
       <div><label>除脂肪量 kg</label><input type="number" step="0.1" inputmode="decimal" id="tFFM"></div>
@@ -229,6 +232,7 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
       測れたときだけ。<b>TANITAと同じ日に両方測れると、2機種のずれが定数として出せます。</b>
     </div>
     <div class="mg">
+<div style="grid-column:1/-1"><label>測った日（今日以外なら直す）</label><input type="date" id="iD"></div>
       <div><label>体重 kg</label><input type="number" step="0.1" inputmode="decimal" id="iW"></div>
       <div><label>骨格筋量 SMM kg</label><input type="number" step="0.1" inputmode="decimal" id="iSMM"></div>
       <div><label>体脂肪量 kg</label><input type="number" step="0.1" inputmode="decimal" id="iFAT"></div>
@@ -295,6 +299,9 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
     <div class="note" style="margin-top:10px" id="pred12N"></div>
   </div>
 
+  <h2>目標：上腕 40cm と、それまでの判定ライン</h2>
+  <div class="card" id="goalBox"></div>
+
   <h2>系列の傾きで見る（単回では読めないもの）</h2>
   <div class="card" id="slopeBox"></div>
 
@@ -348,12 +355,13 @@ label{display:block;font-size:11.5px;color:var(--ink3);margin:10px 0 4px}
   <h2>予測モデルの前提</h2>
   <div class="card">
     <div class="mg">
-      <div><label>1日の平均赤字 kcal</label><input type="number" step="10" inputmode="numeric" id="pDef"></div>
+      <div><label>1日の赤字 下限 kcal</label><input type="number" step="10" inputmode="numeric" id="pDefLo"></div>
+      <div><label>1日の赤字 上限 kcal</label><input type="number" step="10" inputmode="numeric" id="pDefHi"></div>
       <div><label>起点の日</label><input type="text" id="pD0" placeholder="2026-11-21"></div>
       <div><label>起点 体重 kg</label><input type="number" step="0.1" inputmode="decimal" id="pW0"></div>
       <div><label>起点 除脂肪 kg</label><input type="number" step="0.1" inputmode="decimal" id="pF0"></div>
-      <div><label>除脂肪 増 下限 kg/月</label><input type="number" step="0.01" inputmode="decimal" id="pGL"></div>
-      <div><label>除脂肪 増 上限 kg/月</label><input type="number" step="0.01" inputmode="decimal" id="pGH"></div>
+      <div><label>体重減のうち脂肪 下限（0〜1）</label><input type="number" step="0.01" inputmode="decimal" id="pGL"></div>
+      <div><label>体重減のうち脂肪 上限（0〜1）</label><input type="number" step="0.01" inputmode="decimal" id="pGH"></div>
       <div><label>次の健診日（YYYY-MM-DD）</label><input type="text" id="pKen" placeholder="2027-05-27"></div>
     </div>
     <button class="btn p sm" style="margin-top:12px" id="btnPSave">予測の前提を保存</button>
@@ -502,10 +510,22 @@ const Q0=()=>({sq:{lv:1,base:20,best:0,fail:null},pu:{lv:1,base:12,best:0,fail:n
 const G0=()=>({d:'2026-11-21',ul:32.5,ur:33.5,tl:47,tr:49});
 const D0=()=>({lv:LV0(),load:LD0(),q:Q0(),
   sets:2,log:[],meas:[],bia:[],ib:[],bee:[],kenshin:'',today:null,
-  base:{d:'2026-11-21',w:72.2,ffm:58.6,bf:18.8,wc:84.21,vis:11},
+  // 起点は条件統一TANITAの直近3回（11-15・11-21・11-22）の平均。単回だと除脂肪だけで SD 0.6kg 揺れるため
+  base:{d:'2026-11-21',w:72.9,ffm:58.9,bf:19.2,wc:84.21,vis:11},
   g0:G0(),
-  model:{def:433,gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},ver:6});
-let S=load(), calM=new Date(); if(!S.g0) S.g0=G0(); seedMeas();
+  // 赤字は幅で持つ：下＝直近28日の実績 304／上＝08-23からの全期間の実績 411（CALIPERの記録から算出、11-22時点）
+  // adapt＝体重が1kg減るごとに1日の消費が減る量（kcal/日/kg）。帯を据え置く限り、赤字は少しずつ縮む
+  // shLo/shHi＝体重の減少のうち、TANITAが「脂肪」と読む割合。本人のTANITA系列（09-12〜11-22、17回）の傾きの比 0.45〜0.48
+  model:{defLo:304,defHi:411,adapt:22,shLo:0.45,shHi:0.50},ver:9});
+// 起点を作った条件統一TANITAの3回（CALIPERの記録）。アプリに入っていなければ入れておく
+const BIA0=[{d:'2026-11-15',w:73.2,bf:19.7,ffm:58.8,mus:55.8,vis:12,leg:101},
+            {d:'2026-11-21',w:72.2,bf:18.8,ffm:58.6,mus:55.6,vis:11,leg:102},
+            {d:'2026-11-22',w:73.2,bf:19.0,ffm:59.3,mus:56.2,vis:12,leg:102}];
+function seedBia(m){ m.bia=m.bia||[]; BIA0.forEach(r=>{ if(!m.bia.some(x=>x.d===r.d)) m.bia.push(Object.assign({},r)); });
+  m.bia.sort((a,c)=>a.d<c.d?-1:1); }
+let S=load(), calM=new Date(); if(!S.g0) S.g0=G0(); seedMeas(); if(!S.bia||!S.bia.length) seedBia(S);
+// 2026-11-22 本人決定：狙いは筋増。最終目標は上腕（力こぶ最大）40cm＝高校時代の最大値
+if(!S.goal) S.goal={arm:40, set:'2026-11-22'};
 
 function load(){
   try{const r=localStorage.getItem(KEY); if(r){const o=JSON.parse(r); const m=Object.assign(D0(),o);
@@ -521,6 +541,19 @@ function load(){
         else { m.meas.push({d:m.g0.d,ul:m.g0.ul,ur:m.g0.ur,tl:m.g0.tl,tr:m.g0.tr,ch:null,wa:null,pu:null});
                m.meas.sort((a,c)=>a.d<c.d?-1:1); }
         m.ver=6; }
+      // ver 7：予測モデルの見直し（赤字を実績の幅に・消費の目減り・起点を3回平均に）
+      if((o.ver||0)<7){ const M=m.model||{};
+        m.model=Object.assign({gLo:0.08,gHi:0.20,glyLo:0.3,glyHi:0.5},M,{defLo:304,defHi:411,adapt:22});
+        delete m.model.def;
+        if(m.base && m.base.d==='2026-11-21' && m.base.w===72.2 && m.base.ffm===58.6){
+          m.base.w=72.9; m.base.ffm=58.9; m.base.bf=19.2; }
+        m.ver=7; }
+      // ver 8：脂肪と除脂肪の分け方を、理論値（赤字＝すべて脂肪＋除脂肪が増える）から本人のTANITA系列の実績に置き換え
+      if((o.ver||0)<8){ const M=m.model||{};
+        m.model={defLo:M.defLo??304, defHi:M.defHi??411, adapt:M.adapt??22, shLo:0.45, shHi:0.50};
+        m.ver=8; }
+      // ver 9：TANITA・InBody・周径に日付欄。起点の3回のTANITAを入れる
+      if((o.ver||0)<9){ seedBia(m); m.ver=9; }
       if(!m.q) m.q=Q0();
       return m;} }
   catch(e){}
@@ -774,18 +807,24 @@ document.getElementById('btnUndo').onclick=()=>{
 function dayDiff(a,b){ return Math.round((new Date(b+'T00:00')-new Date(a+'T00:00'))/86400000); }
 function predAt(dstr){
   const B=S.base, M=S.model, t=Math.max(0,dayDiff(B.d,dstr));
-  const gly=Math.min(1,t/28), mo=t/30.44;
-  const gLo=M.glyLo*gly + M.gLo*mo, gHi=M.glyHi*gly + M.gHi*mo;   // 除脂肪の増加（帯）
-  const fatLoss=M.def*t/CAL.kcalPerKg;                             // 脂肪の減少（点）
-  const wLo=B.w-fatLoss+gLo, wHi=B.w-fatLoss+gHi;
-  const fLo=B.ffm+gLo, fHi=B.ffm+gHi;
-  const fatLo=wLo-fHi, fatHi=wHi-fLo;
-  return { t:t,
-    w:[wLo,wHi], ffm:[fLo,fHi], fat:[fatLo,fatHi],
-    bf:[fatLo/wLo*100, fatHi/wHi*100],
-    // 腹囲は回帰の「傾き」だけを使い、切片ではなく起点の実測値に錨を打つ。
-    // こうすると回帰の切片誤差（残差SD 0.66cm）が予測に乗らない。
-    wc:[B.wc+CAL.wcA*(wLo-B.w), B.wc+CAL.wcA*(wHi-B.w)] };
+  // 体重の減少（帯）。エネルギーモデルは「体重」で検証済み（91日で予測5.48kg／実測5.6kg）。
+  // 帯（摂取）を据え置くと、痩せたぶん消費が減って赤字が縮む：
+  //   d(減少)/dt = (D − adapt×減少)/ρ  →  減少(t) = D/adapt × (1 − e^(−adapt·t/ρ))
+  const loss=D=> (M.adapt>0) ? D/M.adapt*(1-Math.exp(-M.adapt*t/CAL.kcalPerKg)) : D*t/CAL.kcalPerKg;
+  const dA=Math.min(M.defLo,M.defHi), dB=Math.max(M.defLo,M.defHi);
+  const lLo=loss(dA), lHi=loss(dB);
+  // 脂肪と除脂肪への分け方は、本人のTANITA系列の実績（体重減のうち脂肪 shLo〜shHi）をそのまま延ばす。
+  // ＝「これまでどおり続けたら TANITA がどう読むか」。レジスタンスの効果は入れていない。
+  //   除脂肪が予測より上にずれたら、それがレジスタンスの効果として読める。
+  const sA=Math.min(M.shLo,M.shHi), sB=Math.max(M.shLo,M.shHi), fat0=B.w-B.ffm;
+  const C=[]; [lLo,lHi].forEach(L=>[sA,sB].forEach(sh=>{
+    const fat=fat0-sh*L, ffm=B.ffm-(1-sh)*L; C.push({fat,ffm,w:fat+ffm,bf:fat/(fat+ffm)*100}); }));
+  const rng=k=>[Math.min(...C.map(c=>c[k])), Math.max(...C.map(c=>c[k]))];
+  return { t:t, loss:[lLo,lHi],
+    w:[B.w-lHi, B.w-lLo], ffm:rng('ffm'), fat:rng('fat'), bf:rng('bf'),
+    // 腹囲は体重の変化に較正の傾き（0.856 cm/kg）を掛け、起点の7点平均に錨を打つ。
+    // 較正は同じ期間の体重と腹囲の実測どうしなので、脂肪と除脂肪の分け方はすでに傾きに含まれている。
+    wc:[B.wc-CAL.wcA*lHi, B.wc-CAL.wcA*lLo] };
 }
 const MET=[
  {k:'w',  nm:'体重',     u:'kg', sd:CAL.wSD,   nd:1, get:r=>r.w},
@@ -848,18 +887,25 @@ function renderPred(){
   const d12=new Date(S.base.d+'T00:00'); d12.setDate(d12.getDate()+84);
   const P12=predAt(ds(d12));
   let t12='<tr><th>項目</th><th>起点</th><th>'+ds(d12)+' の予測</th><th>変化</th></tr>';
-  [['w','体重','kg',S.base.w],['ffm','除脂肪量','kg',S.base.ffm],
-   ['bf','体脂肪率','%',S.base.bf],['wc','腹囲7点','cm',S.base.wc]].forEach(([k,nm,u,b0])=>{
+  [['w','体重','kg',S.base.w],['fat','脂肪量','kg',S.base.w-S.base.ffm],['ffm','除脂肪量','kg',S.base.ffm],
+   ['bf','体脂肪率','%',(1-S.base.ffm/S.base.w)*100],['wc','腹囲7点','cm',S.base.wc]].forEach(([k,nm,u,b0])=>{
     const lo=P12[k][0],hi=P12[k][1];
     t12+='<tr><td>'+nm+'</td><td>'+b0.toFixed(1)+'</td><td><b>'+lo.toFixed(1)+'〜'+hi.toFixed(1)+'</b></td>'+
          '<td>'+((lo-b0)>0?'+':'')+(lo-b0).toFixed(1)+'〜'+((hi-b0)>0?'+':'')+(hi-b0).toFixed(1)+'</td></tr>';
   });
   document.getElementById('pred12').innerHTML=t12;
   document.getElementById('pred12N').innerHTML=
-    '前提：1日の平均赤字 <b>'+S.model.def+' kcal</b>／除脂肪の増加 <b>'+S.model.gLo+'〜'+S.model.gHi+
-    ' kg/月</b>（48歳・レジスタンス初心者・軽度の赤字）／最初の4週に水分とグリコーゲンで <b>+'+
-    S.model.glyLo+'〜'+S.model.glyHi+' kg</b>。<br>'+
-    '赤字をやめて維持に切り替えるなら、設定で赤字を0にしてください。予測が引き直されます。';
+    '<b>前提</b><br>'+
+    '<b>この予測は「これまでどおり続けたら TANITA がどう読むか」です。レジスタンスの効果は入れていません。</b>'+
+    '除脂肪が予測より上にずれたら、それが効果として読めます。<br><br>'+
+    '① 体重：1日の赤字 <b>'+S.model.defLo+'〜'+S.model.defHi+' kcal</b>（直近28日の実績〜全期間の実績）。'+
+    '痩せたぶん消費が減る分（体重1kgあたり <b>'+S.model.adapt+' kcal/日</b>）も入れています。<br>'+
+    '② 脂肪と除脂肪の分け方：これまでのTANITA系列では、体重の減少のうち脂肪として読まれたのは <b>'+
+    Math.round(S.model.shLo*100)+'〜'+Math.round(S.model.shHi*100)+'%</b>。残りは除脂肪の減少として読まれています。'+
+    'その割合をそのまま延ばしています。<br>'+
+    '③ 腹囲：体重の変化 × 0.856 cm/kg（体重と腹囲の実測どうしの較正）。<br>'+
+    '④ 起点は条件統一TANITAの直近3回の平均（'+S.base.w+' kg／除脂肪 '+S.base.ffm+' kg）。<br><br>'+
+    '赤字をやめて維持に切り替えるなら、設定で赤字の下限・上限を0にしてください。予測が引き直されます。';
 
   // 傾き
   const n=S.bia.length;
@@ -877,7 +923,7 @@ function renderPred(){
       return {b:b1*30.44, se:sde/Math.sqrt(sxx)*30.44, n:pts.length}; }
     const sf=slope(S.bia.map(r=>r.ffm)), sw=slope(S.bia.map(r=>r.w));
     sb='<table><tr><th>系列</th><th>傾き kg/月</th><th>誤差 ±</th><th>n</th><th>判定</th></tr>';
-    [['除脂肪量',sf,(S.model.gLo+S.model.gHi)/2],['体重',sw,null]].forEach(([nm,o,exp])=>{
+    [['除脂肪量',sf,null],['体重',sw,null]].forEach(([nm,o,exp])=>{
       if(!o){ sb+='<tr><td>'+nm+'</td><td colspan="4">—</td></tr>'; return; }
       const sig=Math.abs(o.b)>2*o.se;
       sb+='<tr><td>'+nm+'</td><td><b>'+(o.b>0?'+':'')+o.b.toFixed(2)+'</b></td><td>'+o.se.toFixed(2)+
@@ -890,6 +936,7 @@ function renderPred(){
       '傾きの誤差は n が増えるほど小さくなるので、12週ためれば月 +0.1〜0.2 kg でも判定できる見込みです。</div>';
   }
   document.getElementById('slopeBox').innerHTML=sb;
+  renderGoal(P12, ds(d12));
 
   document.getElementById('calBox').innerHTML=
     '<b>すべて本人の実測から較正した値です（文献値ではありません）。</b><br><br>'+
@@ -903,11 +950,70 @@ function renderPred(){
     '系列の傾きとしてなら十分に使えます。';
 }
 
+/* 目標と判定ライン（2026-11-22）
+   赤字のあいだは「除脂肪を守る」段階。判定は除脂肪量（kg）の傾きで行う。
+   除脂肪率（＝100−体脂肪率）は、脂肪が減れば除脂肪が横ばいでも自動的に上がるので、増えた証拠にはならない。 */
+function renderGoal(P12, d12){
+  const B=S.base, g=S.g0||G0(), G=S.goal||{arm:40};
+  const ffmPct=(w,f)=>f/w*100;
+  // 守れた場合：体重の予測は同じで、除脂肪が起点のまま（減った体重はすべて脂肪）
+  const wLo=P12.w[0], wHi=P12.w[1];
+  const keep={ ffm:[B.ffm,B.ffm], fat:[wLo-B.ffm, wHi-B.ffm] };
+  keep.bf=[keep.fat[0]/wLo*100, keep.fat[1]/wHi*100];
+  keep.fp=[ffmPct(wHi,B.ffm), ffmPct(wLo,B.ffm)];
+  const hist={ ffm:P12.ffm, bf:P12.bf, fp:[100-P12.bf[1],100-P12.bf[0]] };
+  const b=lastBia();
+  const nowF=b&&b.ffm!=null?b.ffm:null, nowW=b?b.w:null;
+  const aL=avg7('ul'), aR=avg7('ur'), wa=avg7('wa');
+  const f1=x=>x.toFixed(1), rg=a=>f1(a[0])+'〜'+f1(a[1]);
+  const armNow=(aL&&aR)?(aL.a+aR.a)/2:null, arm0=(g.ul+g.ur)/2;
+  let h='<table><tr><th>指標</th><th>起点</th><th>12週後<br>これまでの延長</th><th>12週後<br>守れた場合</th><th>いま</th></tr>';
+  h+='<tr><td>除脂肪量 kg ★</td><td>'+f1(B.ffm)+'</td><td>'+rg(hist.ffm)+'</td><td>'+f1(B.ffm-0.7)+'〜'+f1(B.ffm+0.7)+'</td><td>'+(nowF!=null?'<b>'+f1(nowF)+'</b>':'—')+'</td></tr>';
+  h+='<tr><td>除脂肪率 %</td><td>'+f1(ffmPct(B.w,B.ffm))+'</td><td>'+rg(hist.fp)+'</td><td>'+rg(keep.fp)+'</td><td>'+((nowF!=null&&nowW)?'<b>'+f1(ffmPct(nowW,nowF))+'</b>':'—')+'</td></tr>';
+  h+='<tr><td>体脂肪率 %</td><td>'+f1(100-ffmPct(B.w,B.ffm))+'</td><td>'+rg(hist.bf)+'</td><td>'+rg(keep.bf)+'</td><td>'+(b&&b.bf!=null?'<b>'+f1(b.bf)+'</b>':'—')+'</td></tr>';
+  h+='<tr><td>体重 kg</td><td>'+f1(B.w)+'</td><td colspan="2" style="text-align:center">'+rg(P12.w)+'</td><td>'+(nowW?'<b>'+f1(nowW)+'</b>':'—')+'</td></tr>';
+  h+='<tr><td>腹囲7点 cm</td><td>'+f1(B.wc)+'</td><td colspan="2" style="text-align:center">'+rg(P12.wc)+'</td><td>'+(wa?'<b>'+f1(wa.a)+'</b>':'—')+'</td></tr>';
+  h+='<tr><td>上腕 左右平均 cm</td><td>'+f1(arm0)+'</td><td>'+f1(arm0-0.5)+'〜'+f1(arm0)+'</td><td>'+f1(arm0)+'〜'+f1(arm0+0.5)+'</td><td>'+(armNow?'<b>'+f1(armNow)+'</b>':'—')+'</td></tr>';
+  h+='</table>';
+  // 除脂肪の傾きの判定（系列の傾き。単回では読まない）
+  let jud='TANITAの記録が3回たまると、除脂肪の傾きで判定します。';
+  // 判定はプログラム開始の起点（11-15〜11-22の3回）以降の記録だけで行う。それより前はレジスタンス前の系列
+  const J=S.bia.filter(r=>r.ffm!=null && r.d>=BIA0[0].d), n=J.length;
+  if(n>=3){
+    const x=J.map(r=>dayDiff(B.d,r.d)), y=J.map(r=>r.ffm);
+    const mx=x.reduce((a,c)=>a+c,0)/n, my=y.reduce((a,c)=>a+c,0)/n;
+    const sxx=x.reduce((a,c)=>a+(c-mx)**2,0);
+    if(sxx>0){
+      const b1=x.reduce((a,c,i)=>a+(c-mx)*(y[i]-my),0)/sxx*30.44;
+      const se=CAL.ffmSD/Math.sqrt(sxx)*30.44;
+      const cut=Math.max(0.45,2*se);
+      const cls = b1<-cut?['減っている','var(--hot)']:(b1>cut?['増えている','var(--up)']:['守れている（0と区別できない）','var(--ink2)']);
+      jud='除脂肪の傾き <b>'+(b1>0?'+':'')+b1.toFixed(2)+' kg/月</b>（n='+n+'、判定の幅 ±'+cut.toFixed(2)+'）→ '+
+          '<b style="color:'+cls[1]+'">'+cls[0]+'</b>。これまでの系列は −0.7〜−1.2 kg/月でした。';
+    }
+  }
+  const gap=G.arm-arm0;
+  h+='<div class="note" style="margin-top:10px">'+jud+'</div>'+
+    '<div class="note" style="margin-top:10px">'+
+    '<b>段階1（いま〜'+d12+'・赤字のあいだ）：除脂肪を守る。</b><br>'+
+    '判定は<b>除脂肪量（kg）の傾き</b>で行います。−0.45〜+0.45 kg/月なら「守れている」、それより上なら「増えている」。'+
+    '計器の揺れ（SD 0.61kg）から、12週分の記録でもこれより細かい差は読めません。<br>'+
+    '除脂肪率は、脂肪が減れば除脂肪が横ばいでも上がるので、増えた証拠には使いません（並べて見るだけ）。<br>'+
+    '「守れた場合」の体脂肪率が低く出るのは、予測どおり体重が減ったうえで除脂肪が減らなければ、減った分がすべて脂肪になる計算だからです。'+
+    '実測がどちらの列に寄るかで、守れているかが分かります。<br><br>'+
+    '<b>最終目標：上腕 '+G.arm+' cm</b>（いま '+f1(arm0)+' cm、あと <b>+'+f1(gap)+' cm</b>＝+'+Math.round(gap/arm0*100)+'%）。<br>'+
+    '若い男性の研究で、10〜12週のレジスタンスで力こぶ周径は平均 +4.9%。その4倍強にあたるので、<b>年単位の目標</b>です。'+
+    '赤字のあいだは、脂肪が落ちるぶん上腕は細くなる向きにも動くので、段階1では「維持〜+0.5cm」を良い兆しと読みます。<br>'+
+    '<b>段階2</b>（赤字をやめて維持〜わずかに上回る段階）から、上腕を増やしにいく設計に切り替えます。'+
+    'いまの5種目には、腕だけを狙う種目（力こぶ・二の腕の裏）がありません。</div>';
+  document.getElementById('goalBox').innerHTML=h;
+}
+
 /* ========== 計測 ========== */
 const MF=[['ul','上腕 左'],['ur','上腕 右'],['tl','大腿 左'],['tr','大腿 右'],['ch','胸囲'],['wa','腹囲'],['pu','朝の脈']];
 document.getElementById('btnMeas').onclick=()=>{
   const g=id=>{const v=parseFloat(document.getElementById(id).value); return isFinite(v)?v:null;};
-  const rec={d:ds(),ul:g('mUL'),ur:g('mUR'),tl:g('mTL'),tr:g('mTR'),ch:g('mCH'),wa:g('mWA'),pu:g('mPU')};
+  const rec={d:pickD('mD'),ul:g('mUL'),ur:g('mUR'),tl:g('mTL'),tr:g('mTR'),ch:g('mCH'),wa:g('mWA'),pu:g('mPU')};
   if(MF.every(f=>rec[f[0]]===null)){ toast('入力がありません','どれか1つは数字を入れてください'); return; }
   S.meas=S.meas.filter(m=>m.d!==rec.d); S.meas.push(rec);
   S.meas.sort((a,c)=>a.d<c.d?-1:1); save(); renderMeas(); renderLog();
@@ -917,10 +1023,14 @@ function avg7(k){ const v=S.meas.slice(-7).map(m=>m[k]).filter(x=>x!==null&&x!==
   return v.length?{a:v.reduce((s,x)=>s+x,0)/v.length,n:v.length}:null; }
 function avgPrev(k){ const v=S.meas.slice(-14,-7).map(m=>m[k]).filter(x=>x!==null&&x!==undefined);
   return v.length?v.reduce((s,x)=>s+x,0)/v.length:null; }
+// 日付欄：空なら今日。未来の日付は今日に丸める
+function pickD(id){ const e=document.getElementById(id); const v=e&&e.value?e.value:ds();
+  return v>ds()?ds():v; }
+function resetDates(){ ['mD','tD','iD'].forEach(i=>{ const e=document.getElementById(i); if(e){ e.value=ds(); e.max=ds(); } }); }
 const gnum=id=>{const e=document.getElementById(id); if(!e)return null;
   const v=parseFloat(e.value); return isFinite(v)?v:null;};
 document.getElementById('btnBia').onclick=()=>{
-  const r={d:ds(),w:gnum('tW'),bf:gnum('tBF'),ffm:gnum('tFFM'),mus:gnum('tMUS'),
+  const r={d:pickD('tD'),w:gnum('tW'),bf:gnum('tBF'),ffm:gnum('tFFM'),mus:gnum('tMUS'),
            vis:gnum('tVIS'),leg:gnum('tLEG')};
   if(r.w===null){ toast('体重が要ります','TANITAは体重を基準に差を出します'); return; }
   if(r.ffm===null && r.bf!==null) r.ffm=+(r.w*(1-r.bf/100)).toFixed(1);
@@ -930,7 +1040,7 @@ document.getElementById('btnBia').onclick=()=>{
   toast('⚖️ TANITA を記録','通算 '+S.bia.length+' 回。予測タブで差が出ます');
 };
 document.getElementById('btnIb').onclick=()=>{
-  const r={d:ds(),w:gnum('iW'),smm:gnum('iSMM'),fat:gnum('iFAT'),bf:gnum('iBF'),
+  const r={d:pickD('iD'),w:gnum('iW'),smm:gnum('iSMM'),fat:gnum('iFAT'),bf:gnum('iBF'),
            ra:gnum('iRA'),la:gnum('iLA'),tr:gnum('iTR'),rl:gnum('iRL'),ll:gnum('iLL'),pha:gnum('iPHA')};
   if(r.w===null && r.smm===null){ toast('入力がありません','体重か骨格筋量のどちらかは入れてください'); return; }
   S.ib=S.ib.filter(x=>x.d!==r.d); S.ib.push(r); S.ib.sort((a,c)=>a.d<c.d?-1:1);
@@ -941,6 +1051,7 @@ document.getElementById('btnIb').onclick=()=>{
     : '通算 '+S.ib.length+' 回');
 };
 function renderMeas(){
+  resetDates();
   const last=S.meas[S.meas.length-1];
   if(last){ [['mUL','ul'],['mUR','ur'],['mTL','tl'],['mTR','tr'],['mCH','ch'],['mWA','wa']]
     .concat([['mPU','pu']]).forEach(([i,k])=>{ const el=document.getElementById(i);
@@ -1070,12 +1181,13 @@ function renderSet(){
 document.getElementById('set2').onclick=()=>{S.sets=2;save();renderSet();renderToday();};
 document.getElementById('set3').onclick=()=>{S.sets=3;save();renderSet();renderToday();};
 function fillPred(){
-  document.getElementById('pDef').value=S.model.def;
+  document.getElementById('pDefLo').value=S.model.defLo;
+  document.getElementById('pDefHi').value=S.model.defHi;
   document.getElementById('pD0').value=S.base.d;
   document.getElementById('pW0').value=S.base.w;
   document.getElementById('pF0').value=S.base.ffm;
-  document.getElementById('pGL').value=S.model.gLo;
-  document.getElementById('pGH').value=S.model.gHi;
+  document.getElementById('pGL').value=S.model.shLo;
+  document.getElementById('pGH').value=S.model.shHi;
   document.getElementById('pKen').value=S.kenshin||'';
 }
 document.getElementById('btnPSave').onclick=()=>{
@@ -1087,12 +1199,13 @@ document.getElementById('btnPSave').onclick=()=>{
   if(g('pF0')!==null) S.base.ffm=g('pF0');
   if(S.base.w) S.base.bf=+((1-S.base.ffm/S.base.w)*100).toFixed(1);
   const a=avg7('wa'); if(a) S.base.wc=+a.a.toFixed(2);   // 起点の腹囲は実測（7点平均）を使う
-  if(g('pDef')!==null) S.model.def=g('pDef');
-  if(g('pGL')!==null) S.model.gLo=g('pGL');
-  if(g('pGH')!==null) S.model.gHi=g('pGH');
+  if(g('pDefLo')!==null) S.model.defLo=g('pDefLo');
+  if(g('pDefHi')!==null) S.model.defHi=g('pDefHi');
+  if(g('pGL')!==null) S.model.shLo=g('pGL');
+  if(g('pGH')!==null) S.model.shHi=g('pGH');
   const kv=document.getElementById('pKen').value.trim();
   S.kenshin = /^\d{4}-\d{2}-\d{2}$/.test(kv) ? kv : '';
-  save(); renderToday(); renderPred(); toast('🎯 予測を引き直しました', S.model.def===0?'赤字ゼロ＝維持で計算します':'1日 '+S.model.def+' kcal の赤字で計算します');
+  save(); renderToday(); renderPred(); toast('🎯 予測を引き直しました', (S.model.defLo===0&&S.model.defHi===0)?'赤字ゼロ＝維持で計算します':'1日 '+S.model.defLo+'〜'+S.model.defHi+' kcal の赤字で計算します');
 };
 document.getElementById('btnExp').onclick=()=>{ document.getElementById('ioBox').value=JSON.stringify(S);
   toast('書き出しました','下の枠の文字をすべて選んでコピーし、メモなどに保存してください'); };
